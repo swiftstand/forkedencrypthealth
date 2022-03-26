@@ -1,4 +1,6 @@
 from django.shortcuts import render,redirect,reverse
+
+from hospitalmanagement.settings import LOG_PATH
 from . import forms,models
 from django.db.models import Sum
 from django.contrib.auth.models import Group
@@ -8,6 +10,11 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import datetime,timedelta,date
 from django.conf import settings
 from django.db.models import Q
+import logging
+import os
+#log files
+logFileName= os.path.join(LOG_PATH, str(datetime.now().strftime("%m_%d_%Y") + ".log"))
+logging.basicConfig(filename=logFileName,  format='%(asctime)s %(message)s', level=logging.ERROR)
 
 # Create your views here.
 def home_view(request):
@@ -175,34 +182,46 @@ def admin_view_doctor_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def delete_doctor_from_hospital_view(request,pk):
-    doctor=models.Doctor.objects.get(id=pk)
-    user=models.User.objects.get(id=doctor.user_id)
-    user.delete()
-    doctor.delete()
-    return redirect('admin-view-doctor')
+    try:
+        doctor=models.Doctor.objects.get(id=pk)
+        user=models.User.objects.get(id=doctor.user_id)
+        user.delete()
+        doctor.delete()
+        return redirect('admin-view-doctor')
+    except Exception as e:
+        logging.error("error in delete doctor view from hospital, error is {}".format(e))
+        return redirect('admin-view-doctor')    
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def update_doctor_view(request,pk):
-    doctor=models.Doctor.objects.get(id=pk)
-    user=models.User.objects.get(id=doctor.user_id)
+    try:
+        doctor=models.Doctor.objects.get(id=pk)
+        
+        user=models.User.objects.get(id=doctor.user_id)
 
-    userForm=forms.DoctorUserForm(instance=user)
-    doctorForm=forms.DoctorForm(request.FILES,instance=doctor)
-    mydict={'userForm':userForm,'doctorForm':doctorForm}
-    if request.method=='POST':
-        userForm=forms.DoctorUserForm(request.POST,instance=user)
-        doctorForm=forms.DoctorForm(request.POST,request.FILES,instance=doctor)
-        if userForm.is_valid() and doctorForm.is_valid():
-            user=userForm.save()
-            user.set_password(user.password)
-            user.save()
-            doctor=doctorForm.save(commit=False)
-            doctor.status=True
-            doctor.save()
-            return redirect('admin-view-doctor')
+        userForm=forms.DoctorUserForm(instance=user)
+        doctorForm=forms.DoctorForm(request.FILES,instance=doctor)
+        mydict={'userForm':userForm,'doctorForm':doctorForm}
+        if request.method=='POST':
+        
+
+            userForm=forms.DoctorUserForm(request.POST,instance=user)
+            doctorForm=forms.DoctorForm(request.POST,request.FILES,instance=doctor)
+            if userForm.is_valid() and doctorForm.is_valid():
+                user=userForm.save()
+                user.set_password(user.password)
+                user.save()
+                doctor=doctorForm.save(commit=False)
+                doctor.status=True
+                doctor.save()
+                
+                return redirect('admin-view-doctor')
+    except Exception as e:
+        logging.error("error in update doctor view, error is {}".format(e))
+        return redirect('admin-view-doctor')
     return render(request,'hospital/admin_update_doctor.html',context=mydict)
 
 
@@ -211,26 +230,36 @@ def update_doctor_view(request,pk):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_add_doctor_view(request):
-    userForm=forms.DoctorUserForm()
-    doctorForm=forms.DoctorForm()
-    mydict={'userForm':userForm,'doctorForm':doctorForm}
-    if request.method=='POST':
-        userForm=forms.DoctorUserForm(request.POST)
-        doctorForm=forms.DoctorForm(request.POST, request.FILES)
-        if userForm.is_valid() and doctorForm.is_valid():
-            user=userForm.save()
-            user.set_password(user.password)
-            user.save()
+    try:
+        userForm=forms.DoctorUserForm()
+        doctorForm=forms.DoctorForm()
+        mydict={'userForm':userForm,'doctorForm':doctorForm}
+        if request.method=='POST':
+            userForm=forms.DoctorUserForm(request.POST)
+            doctorForm=forms.DoctorForm(request.POST, request.FILES)
+            if userForm.is_valid() and doctorForm.is_valid():
+                user=userForm.save()
+                user.set_password(user.password)
+                user.save()
 
-            doctor=doctorForm.save(commit=False)
-            doctor.user=user
-            doctor.status=True
-            doctor.save()
+                doctor=doctorForm.save(commit=False)
+                doctor.user=user
+                doctor.status=True
+                doctor.save()
 
-            my_doctor_group = Group.objects.get_or_create(name='DOCTOR')
-            my_doctor_group[0].user_set.add(user)
+                my_doctor_group = Group.objects.get_or_create(name='DOCTOR')
+                my_doctor_group[0].user_set.add(user)
+                return HttpResponseRedirect('admin-view-doctor')
+            else:
+                logging.error("invalid form with data exist")
+                return HttpResponseRedirect('admin-add-doctor')
 
-        return HttpResponseRedirect('admin-view-doctor')
+
+            
+            
+    except Exception as e:
+        logging.error("error in admin add doctor view, error is {}".format(e))
+        return redirect('admin-view-doctor')        
     return render(request,'hospital/admin_add_doctor.html',context=mydict)
 
 
@@ -247,28 +276,43 @@ def admin_approve_doctor_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def approve_doctor_view(request,pk):
-    doctor=models.Doctor.objects.get(id=pk)
-    doctor.status=True
-    doctor.save()
-    return redirect(reverse('admin-approve-doctor'))
+    try:
+        doctor=models.Doctor.objects.get(id=pk)
+        doctor.status=True
+        doctor.save()
+        return redirect(reverse('admin-approve-doctor'))
+    except Exception as e:
+        logging.error("error in approve_doctor_view,error is {}".format(e))
+        return redirect('admin-approve-doctor')    
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def reject_doctor_view(request,pk):
-    doctor=models.Doctor.objects.get(id=pk)
-    user=models.User.objects.get(id=doctor.user_id)
-    user.delete()
-    doctor.delete()
-    return redirect('admin-approve-doctor')
+    try:
+
+        doctor=models.Doctor.objects.get(id=pk)
+        user=models.User.objects.get(id=doctor.user_id)
+        user.delete()
+        doctor.delete()
+        return redirect('admin-approve-doctor')
+    except Exception as e:
+        logging.error("error in reject_doctor_view,error is {}".format(e))
+        return redirect('admin-approve-doctor')    
+    
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_doctor_specialisation_view(request):
-    doctors=models.Doctor.objects.all().filter(status=True)
-    return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+    try:
+
+        doctors=models.Doctor.objects.all().filter(status=True)
+        return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+    except Exception as e:
+        logging.error("error in admin view doctor specialisation view,error i {}".format(e))
+        return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
 
 
 
