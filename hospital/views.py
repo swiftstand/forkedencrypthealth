@@ -1,3 +1,5 @@
+from cmath import e
+from tkinter import E
 from django.shortcuts import render,redirect,reverse
 
 from hospitalmanagement.settings import LOG_PATH
@@ -251,12 +253,8 @@ def admin_add_doctor_view(request):
                 my_doctor_group[0].user_set.add(user)
                 return HttpResponseRedirect('admin-view-doctor')
             else:
-                logging.error("invalid form with data exist")
+                logging.error("invalid form with data exist in admin view doctor")
                 return HttpResponseRedirect('admin-add-doctor')
-
-
-            
-            
     except Exception as e:
         logging.error("error in admin add doctor view, error is {}".format(e))
         return redirect('admin-view-doctor')        
@@ -269,8 +267,13 @@ def admin_add_doctor_view(request):
 @user_passes_test(is_admin)
 def admin_approve_doctor_view(request):
     #those whose approval are needed
-    doctors=models.Doctor.objects.all().filter(status=False)
-    return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
+    try:
+        doctors=models.Doctor.objects.all().filter(status=False)
+        return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
+
+    except Exception as e:
+        logging.error("error in admin_approve_doctor_view,error is {}".format(e))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
 
 
 @login_required(login_url='adminlogin')
@@ -334,35 +337,47 @@ def admin_view_patient_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def delete_patient_from_hospital_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    user=models.User.objects.get(id=patient.user_id)
-    user.delete()
-    patient.delete()
-    return redirect('admin-view-patient')
+    try:
+        patient=models.Patient.objects.get(id=pk)
+        user=models.User.objects.get(id=patient.user_id)
+        user.delete()
+        patient.delete()
+        return redirect('admin-view-patient')
+    except Exception as e:
+        logging.error("error in delete patient view from hospital, error is {}".format(e))
+        return redirect('admin-view-patient')    
+
+
+
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def update_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    user=models.User.objects.get(id=patient.user_id)
+    try:
 
-    userForm=forms.PatientUserForm(instance=user)
-    patientForm=forms.PatientForm(request.FILES,instance=patient)
-    mydict={'userForm':userForm,'patientForm':patientForm}
-    if request.method=='POST':
-        userForm=forms.PatientUserForm(request.POST,instance=user)
-        patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
-        if userForm.is_valid() and patientForm.is_valid():
-            user=userForm.save()
-            user.set_password(user.password)
-            user.save()
-            patient=patientForm.save(commit=False)
-            patient.status=True
-            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
-            patient.save()
-            return redirect('admin-view-patient')
+        patient=models.Patient.objects.get(id=pk)
+        user=models.User.objects.get(id=patient.user_id)
+
+        userForm=forms.PatientUserForm(instance=user)
+        patientForm=forms.PatientForm(request.FILES,instance=patient)
+        mydict={'userForm':userForm,'patientForm':patientForm}
+        if request.method=='POST':
+            userForm=forms.PatientUserForm(request.POST,instance=user)
+            patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+            if userForm.is_valid() and patientForm.is_valid():
+                user=userForm.save()
+                user.set_password(user.password)
+                user.save()
+                patient=patientForm.save(commit=False)
+                patient.status=True
+                patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+                patient.save()
+                return redirect('admin-view-patient')
+    except Exception as e: 
+        logging.error("error in update patient view, error is {}".format(e))  
+        return redirect('admin-view-patient')             
     return render(request,'hospital/admin_update_patient.html',context=mydict)
 
 
@@ -372,27 +387,36 @@ def update_patient_view(request,pk):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_add_patient_view(request):
-    userForm=forms.PatientUserForm()
-    patientForm=forms.PatientForm()
-    mydict={'userForm':userForm,'patientForm':patientForm}
-    if request.method=='POST':
-        userForm=forms.PatientUserForm(request.POST)
-        patientForm=forms.PatientForm(request.POST,request.FILES)
-        if userForm.is_valid() and patientForm.is_valid():
-            user=userForm.save()
-            user.set_password(user.password)
-            user.save()
+    try:
+        userForm=forms.PatientUserForm()
+        patientForm=forms.PatientForm()
+        mydict={'userForm':userForm,'patientForm':patientForm}
+        if request.method=='POST':
+            userForm=forms.PatientUserForm(request.POST)
+            patientForm=forms.PatientForm(request.POST,request.FILES)
+            if userForm.is_valid() and patientForm.is_valid():
+                user=userForm.save()
+                user.set_password(user.password)
+                user.save()
 
-            patient=patientForm.save(commit=False)
-            patient.user=user
-            patient.status=True
-            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
-            patient.save()
+                patient=patientForm.save(commit=False)
+                patient.user=user
+                patient.status=True
+                patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+                patient.save()
 
-            my_patient_group = Group.objects.get_or_create(name='PATIENT')
-            my_patient_group[0].user_set.add(user)
+                my_patient_group = Group.objects.get_or_create(name='PATIENT')
+                my_patient_group[0].user_set.add(user)
 
-        return HttpResponseRedirect('admin-view-patient')
+                return HttpResponseRedirect('admin-view-patient')
+
+            else:
+            
+                logging.error("invalid form with data exist in admin view patient")
+                return HttpResponseRedirect('admin-add-patient')
+    except Exception as e: 
+        logging.error("error in add admin patient view, error is {}".format(e))  
+        return redirect('admin-view-patient')        
     return render(request,'hospital/admin_add_patient.html',context=mydict)
 
 
@@ -402,6 +426,7 @@ def admin_add_patient_view(request):
 @user_passes_test(is_admin)
 def admin_approve_patient_view(request):
     #those whose approval are needed
+    
     patients=models.Patient.objects.all().filter(status=False)
     return render(request,'hospital/admin_approve_patient.html',{'patients':patients})
 
@@ -410,21 +435,31 @@ def admin_approve_patient_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def approve_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    patient.status=True
-    patient.save()
-    return redirect(reverse('admin-approve-patient'))
+    try:
+        patient=models.Patient.objects.get(id=pk)
+        patient.status=True
+        patient.save()
+        return redirect(reverse('admin-approve-patient'))
+    except Exception as e:   
+        logging.error("error in admin approve patient view from hospital, error is {}".format(e))
+        return redirect('admin-approve-patinet')    
+
+    
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def reject_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    user=models.User.objects.get(id=patient.user_id)
-    user.delete()
-    patient.delete()
-    return redirect('admin-approve-patient')
+    try:
+        patient=models.Patient.objects.get(id=pk)
+        user=models.User.objects.get(id=patient.user_id)
+        user.delete()
+        patient.delete()
+        return redirect('admin-approve-patient')
+    except Exception as e:
+        logging.error("error in reject_patient_view,error is {}".format(e))
+        return redirect('admin-approve-patient')      
 
 
 
