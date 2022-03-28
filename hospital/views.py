@@ -442,8 +442,8 @@ def approve_patient_view(request,pk):
         return redirect(reverse('admin-approve-patient'))
     except Exception as e:   
         logging.error("error in admin approve patient view from hospital, error is {}".format(e))
-        return redirect('admin-approve-patinet')    
-
+        return redirect(reverse('admin-approve-patient'))
+        
     
 
 
@@ -572,14 +572,22 @@ def admin_appointment_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_appointment_view(request):
-    appointments=models.Appointment.objects.all().filter(status=True)
-    return render(request,'hospital/admin_view_appointment.html',{'appointments':appointments})
+    try:
+
+        appointments=models.Appointment.objects.all().filter(status=True)
+        return render(request,'hospital/admin_view_appointment.html',{'appointments':appointments})
+    except Exception as e:
+        logging.error("error in admin-view-appointment-view , error is {}".format(e))
+        return render(request,'hospital/admin_view_appointment.html',{'appointments':appointments})
+
+                                       
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_add_appointment_view(request):
+    
     appointmentForm=forms.AppointmentForm()
     mydict={'appointmentForm':appointmentForm,}
     if request.method=='POST':
@@ -601,27 +609,45 @@ def admin_add_appointment_view(request):
 @user_passes_test(is_admin)
 def admin_approve_appointment_view(request):
     #those whose approval are needed
-    appointments=models.Appointment.objects.all().filter(status=False)
-    return render(request,'hospital/admin_approve_appointment.html',{'appointments':appointments})
+    try:
+            
+        appointments=models.Appointment.objects.all().filter(status=False)
+        return render(request,'hospital/admin_approve_appointment.html',{'appointments':appointments})
+    except Exception as e:
+        logging.error("error in admin-approve-appointment-view , error is {}".format(e))
+        return render(request,'hospital/admin_approve_appointment.html',{'appointments':appointments})
+    
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def approve_appointment_view(request,pk):
-    appointment=models.Appointment.objects.get(id=pk)
-    appointment.status=True
-    appointment.save()
-    return redirect(reverse('admin-approve-appointment'))
+    try:
+        appointment=models.Appointment.objects.get(id=pk)
+        appointment.status=True
+        appointment.save()
+        return redirect(reverse('admin-approve-appointment'))
+    except Exception as e:
+        logging.error("error in admin-approve-appointment,error is {}".format) 
+        return redirect('admin-approve-appointment')
+        
+
+
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def reject_appointment_view(request,pk):
-    appointment=models.Appointment.objects.get(id=pk)
-    appointment.delete()
-    return redirect('admin-approve-appointment')
+    try:
+        appointment=models.Appointment.objects.get(id=pk)
+        appointment.delete()
+        return redirect('admin-approve-appointment')
+    except Exception as e:
+        logging.error("error in reject-appointment-view,error is {}".format) 
+        return redirect('admin-approve-appointment')
+         
 #---------------------------------------------------------------------------------
 #------------------------ ADMIN RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
