@@ -138,10 +138,8 @@
           <tr>
             <td>
               Patient Name : {{name}}<br>
-              Patient Contact : {{mobile}}<br>
-              Patient Address : {{address}}<br>
-              Patient Insurance Provider: {{InsuranceProvider}}<br>
-              Patient Policy Number: {{PolicyNumber}}
+              Patient Mobile : {{mobile}}<br>
+              Patient Addres : {{address}}<br>
             </td>
 
             <td>
@@ -223,7 +221,7 @@
       <td></td>
 
       <td>
-        Total : {{total}}
+        Total Rupees : {{total}}
       </td>
     </tr>
 
@@ -233,6 +231,5 @@
 <div class="download">
   <a style="background:red; width:500px;" href="{% url 'download-pdf' patientId  %}">Download</a>
 </div>
-
 
 {% endblock content %}

@@ -1,3 +1,18 @@
+"""hospitalmanagement URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/4.0/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
 from django.contrib import admin
 from django.urls import path
 from hospital import views
@@ -9,15 +24,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_view,name=''),
 
-
     path('aboutus', views.aboutus_view),
-    path('contactus', views.contactus_view),
-
 
     path('adminclick', views.adminclick_view),
     path('doctorclick', views.doctorclick_view),
     path('patientclick', views.patientclick_view),
-    path('insuranceclick', views.insuranceclick_view),
 
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view,name='doctorsignup'),
@@ -70,6 +81,7 @@ urlpatterns = [
 #---------FOR DOCTOR RELATED URLS-------------------------------------
 urlpatterns +=[
     path('doctor-dashboard', views.doctor_dashboard_view,name='doctor-dashboard'),
+    path('search', views.search_view,name='search'),
 
     path('doctor-patient', views.doctor_patient_view,name='doctor-patient'),
     path('doctor-view-patient', views.doctor_view_patient_view,name='doctor-view-patient'),
@@ -91,7 +103,8 @@ urlpatterns +=[
     path('patient-appointment', views.patient_appointment_view,name='patient-appointment'),
     path('patient-book-appointment', views.patient_book_appointment_view,name='patient-book-appointment'),
     path('patient-view-appointment', views.patient_view_appointment_view,name='patient-view-appointment'),
+    path('patient-view-doctor', views.patient_view_doctor_view,name='patient-view-doctor'),
+    path('searchdoctor', views.search_doctor_view,name='searchdoctor'),
     path('patient-discharge', views.patient_discharge_view,name='patient-discharge'),
-    path('patient-insurance', views.patient_insurance,name='patient-insurance'),
-]
 
+]

@@ -14,7 +14,7 @@ class AdminSigupForm(forms.ModelForm):
         }
 
 
-#for doctor related form
+#for student related form
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -29,7 +29,7 @@ class DoctorForm(forms.ModelForm):
 
 
 
-#for patient related form
+#for teacher related form
 class PatientUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -44,7 +44,8 @@ class PatientForm(forms.ModelForm):
     assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic','patientInsuranceProvider','patientPolicyNumber']
+        fields=['address','mobile','status','symptoms','profile_pic']
+
 
 
 class AppointmentForm(forms.ModelForm):
@@ -70,3 +71,6 @@ class ContactusForm(forms.Form):
 
 
 
+#Developed By : sumit kumar
+#facebook : fb.com/sumit.luv
+#Youtube :youtube.com/lazycoders

@@ -48,7 +48,6 @@
 
 </head>
 <br><br><br>
-<!------ signup page for doctor by admin(sumit)  ---------->
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="container register-form">
@@ -81,7 +80,7 @@
               {% render_field userForm.password class="form-control" placeholder="Password" %}
             </div>
             <div class="form-group">
-              {% render_field doctorForm.mobile class="form-control"  placeholder="Contact" %}
+              {% render_field doctorForm.mobile class="form-control"  placeholder="Mobile" %}
             </div>
             <div class="form-group">
               {% render_field doctorForm.profile_pic required="required" class="form-control" placeholder="Profile Picture" %}
@@ -94,5 +93,4 @@
   </div>
 
 </form>
-
 {% endblock content %}

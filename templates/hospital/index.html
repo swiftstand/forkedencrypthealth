@@ -1,6 +1,9 @@
 {% extends 'hospital/homebase.html' %}
 {% load static %}
-
+<!--
+written By : sumit kumar
+facebook : fb.com/sumit.luv
+-->
 
 
 {% block content %}
@@ -11,7 +14,7 @@
     .jumbotron {
       margin-top: 0px;
       margin-bottom: 0px;
-      background-image: url('{% static "images/back.jpg" %}');
+      background-image: url('{% static "images/bg.jpg" %}');
       background-size: cover;
       background-repeat: no-repeat;
     }
@@ -43,7 +46,7 @@
       }
 
       to {
-        text-shadow: 0 0 20px #eeeeee, 0 0 30px #fa2d2d, 0 0 40px #fa2d2d, 0 0 50px #fa2d2d, 0 0 60px #fa2d2d, 0 0 70px #fa2d2d, 0 0 80px #fa2d2d;
+        text-shadow: 0 0 20px #eeeeee, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
       }
     }
   </style>
@@ -53,13 +56,13 @@
 
 <div class="jumbotron" style="margin-bottom: 0px;margin-top: 0px;">
   <br>
-  <h5 class="display-3 glow">Hospital Management System</h5>
+  <h5 class="display-3 glow">You’ll Love the Way We Care for You</h5>
   <br><br><br><br><br>
   <p>
   <h3>Emergency ?</h3>
 
   <p class="lead">
-    <a class="btn btn-danger btn-lg" href="/patientclick" role="button">Take Appointment Now!</a>
+    <a class="btn btn-primary btn-lg" href="/patientclick" role="button">Take Appointment</a>
   </p>
   <br><br>
 </div>
@@ -68,6 +71,5 @@
 
 {% include "hospital/admin_doctor_patient_card.html" %}
 <br><br><br>
-
 
 {% endblock content %}

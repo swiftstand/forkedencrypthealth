@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-
 departments=[('Cardiologist','Cardiologist'),
 ('Dermatologists','Dermatologists'),
 ('Emergency Medicine Specialists','Emergency Medicine Specialists'),
@@ -10,9 +8,6 @@ departments=[('Cardiologist','Cardiologist'),
 ('Anesthesiologists','Anesthesiologists'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
-
-
-
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/DoctorProfilePic/',null=True,blank=True)
@@ -40,8 +35,6 @@ class Patient(models.Model):
     assignedDoctorId = models.PositiveIntegerField(null=True)
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
-    patientInsuranceProvider = models.CharField(max_length=100,null=True)
-    patientPolicyNumber=models.PositiveIntegerField(null=True)
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -69,8 +62,6 @@ class PatientDischargeDetails(models.Model):
     assignedDoctorName=models.CharField(max_length=40)
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=True)
-    patientInsuranceProvider = models.CharField(max_length=100, null=True)
-    patientPolicyNumber = models.PositiveIntegerField(null=True)
     symptoms = models.CharField(max_length=100,null=True)
 
     admitDate=models.DateField(null=False)
@@ -82,4 +73,3 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
-
