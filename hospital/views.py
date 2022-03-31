@@ -415,6 +415,8 @@ def discharge_patient_view(request,pk):
         'patientId':pk,
         'name':patient.get_name,
         'mobile':patient.mobile,
+        'InsuranceProvider': patient.patientInsuranceProvider,
+        'PolicyNumber': patient.patientPolicyNumber,
         'address':patient.address,
         'symptoms':patient.symptoms,
         'admitDate':patient.admitDate,
@@ -438,6 +440,8 @@ def discharge_patient_view(request,pk):
         pDD.assignedDoctorName=assignedDoctor[0].first_name
         pDD.address=patient.address
         pDD.mobile=patient.mobile
+        pDD.patientInsuranceProvider=patient.patientInsuranceProvider
+        pDD.patientPolicyNumber=patient.patientPolicyNumber
         pDD.symptoms=patient.symptoms
         pDD.admitDate=patient.admitDate
         pDD.releaseDate=date.today()
@@ -480,6 +484,8 @@ def download_pdf_view(request,pk):
         'address':dischargeDetails[0].address,
         'mobile':dischargeDetails[0].mobile,
         'symptoms':dischargeDetails[0].symptoms,
+        'patientInsuranceProvider':dischargeDetails[0].patientInsuranceProvider,
+        'patientPolicyNumber':dischargeDetails[0].patientPolicyNumber,
         'admitDate':dischargeDetails[0].admitDate,
         'releaseDate':dischargeDetails[0].releaseDate,
         'daySpent':dischargeDetails[0].daySpent,
@@ -692,11 +698,13 @@ def patient_dashboard_view(request):
     mydict={
     'patient':patient,
     'doctorName':doctor.get_name,
-    'doctorMobile':doctor.mobile,
-    'doctorAddress':doctor.address,
+    'patientMobile':patient.mobile,
+    'patientAddress':patient.address,
     'symptoms':patient.symptoms,
     'doctorDepartment':doctor.department,
     'admitDate':patient.admitDate,
+    'InsuranceProvider':patient.patientInsuranceProvider,
+    'PolicyNumber':patient.patientPolicyNumber
     }
     return render(request,'hospital/patient_dashboard.html',context=mydict)
 

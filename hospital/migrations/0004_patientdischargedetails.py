@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
                 ('assignedDoctorName', models.CharField(max_length=40)),
                 ('address', models.CharField(max_length=40)),
                 ('mobile', models.CharField(max_length=40, null=True)),
+                ('patientInsuranceProvider', models.CharField(max_length=100)),
+                ('patientPolicyNumber', models.PositiveIntegerField()),
                 ('symptoms', models.CharField(max_length=100, null=True)),
                 ('admitDate', models.DateField()),
                 ('releaseDate', models.DateField()),
