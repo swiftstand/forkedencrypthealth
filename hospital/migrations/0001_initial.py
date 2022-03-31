@@ -35,6 +35,8 @@ class Migration(migrations.Migration):
                 ('assignedDoctorId', models.PositiveIntegerField()),
                 ('status', models.BooleanField(default=False)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('patientInsuranceProvider',models.CharField(max_length=100)),
+                ('patientPolicyNumber',models.PositiveIntegerField())
             ],
         ),
         migrations.CreateModel(

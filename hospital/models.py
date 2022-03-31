@@ -40,6 +40,8 @@ class Patient(models.Model):
     assignedDoctorId = models.PositiveIntegerField(null=True)
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
+    patientInsuranceProvider = models.CharField(max_length=100,null=True)
+    patientPolicyNumber=models.PositiveIntegerField(null=True)
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -67,6 +69,8 @@ class PatientDischargeDetails(models.Model):
     assignedDoctorName=models.CharField(max_length=40)
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=True)
+    patientInsuranceProvider = models.CharField(max_length=100, null=True)
+    patientPolicyNumber = models.PositiveIntegerField(null=True)
     symptoms = models.CharField(max_length=100,null=True)
 
     admitDate=models.DateField(null=False)
@@ -79,12 +83,3 @@ class PatientDischargeDetails(models.Model):
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
 
-
-
-#
-# class InsuranceAgency(models.Model):
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders

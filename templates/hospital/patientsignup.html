@@ -95,7 +95,13 @@
                 {% render_field userForm.password class="form-control" placeholder="Password" %}
               </div>
               <div class="form-group">
-                {% render_field patientForm.mobile class="form-control" pattern="[6789][0-9]{9}" placeholder="Contact Number" %}
+                {% render_field patientForm.mobile class="form-control" pattern="[23456789][0-9]{9}" placeholder="Contact Number" %}
+              </div>
+              <div class="form-group">
+                {% render_field patientForm.patientInsuranceProvider class="form-control" placeholder="Insurance Provider" %}
+              </div>
+              <div class="form-group">
+                {% render_field patientForm.patientPolicyNumber class="form-control" placeholder="Policy Number" %}
               </div>
               <div class="form-group">
                 {% render_field patientForm.assignedDoctorId class="form-control" placeholder="Doctor" %}
