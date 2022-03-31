@@ -1,5 +1,6 @@
-# node modules
+# typescript things
 node_modules/
+dist/
 
 # Django migrations
 migrations/
