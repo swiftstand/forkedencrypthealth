@@ -1,3 +1,4 @@
+from ast import ExceptHandler
 from django.shortcuts import render,redirect,reverse
 from django.contrib import messages
 from hospitalmanagement.settings import LOG_PATH
@@ -12,33 +13,52 @@ from django.conf import settings
 from django.db.models import Q
 import logging
 import os
+
 #log files
 logFileName= os.path.join(LOG_PATH, str(datetime.now().strftime("%m_%d_%Y") + ".log"))
 logging.basicConfig(filename=logFileName,  format='%(asctime)s %(message)s', level=logging.ERROR)
 
 # Create your views here.
 def home_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
-    return render(request,'hospital/index.html')
+    try:
+
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('afterlogin')
+        return render(request,'hospital/index.html')
+    except Exception as e:
+        logging.error("error in home_view, error is {}".format(e)) 
+        return render(request,'hospital/index.html')   
 
 
 def adminclick_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
-    return render(request,'hospital/adminclick.html')
+    try:
+    
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('afterlogin')
+        return render(request,'hospital/adminclick.html')
+    except Exception as e:
+        logging.error("error in adminclick_view, error is {}".format(e)) 
+        return render(request,'hospital/adminclick.html')  
 
 
 def doctorclick_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
-    return render(request,'hospital/doctorclick.html')
+    try:
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('afterlogin')
+        return render(request,'hospital/doctorclick.html')
+    except Exception as e:
+        logging.error("error in doctorclick_view, error is {}".format(e))    
+        return render(request,'hospital/doctorclick.html')
 
 
 def patientclick_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')
-    return render(request,'hospital/patientclick.html')
+    try:
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('afterlogin')
+        return render(request,'hospital/patientclick.html')
+    except Exception as e:
+        logging.error("error in patientclick_view,error is {}".format(e)) 
+        return render(request,'hospital/patientclick.html')   
 
 
 
@@ -57,7 +77,7 @@ def admin_signup_view(request):
                 return HttpResponseRedirect('adminlogin')
             else:
                 messages.error(request,"Admin User Exist.")
-                logging.error("error in admin signup view with data already exist.")    
+                logging.error("error in admin_signup_view with data already exist.")    
     except Exception as e:
         logging.error("error in admin_signup_view, error is {}".format(e))
         return HttpResponseRedirect('adminlogin')
@@ -86,7 +106,7 @@ def doctor_signup_view(request):
                 return HttpResponseRedirect('doctorlogin')
             else:
                 messages.error(request,"Doctor User Exist.")
-                logging.error("error in doctor signup view with data already exist.")    
+                logging.error("error in doctor_signup_view with data already exist.")    
     except Exception as e:
         logging.error("error in doctor_signup_view, error is {}".format(e))
         return HttpResponseRedirect('doctorlogin')
@@ -115,7 +135,7 @@ def patient_signup_view(request):
                 return HttpResponseRedirect('patientlogin')
             else:
                 messages.error(request,"Patient User Exist.")
-                logging.error("error in patient signup view with data already exist.")    
+                logging.error("error in patient_signup_view with data already exist.")    
     except Exception as e:
         logging.error("error in patient_signup_view, error is {}".format(e))
         return HttpResponseRedirect('patientlogin')
@@ -133,6 +153,7 @@ def is_patient(user):
 
 #---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
 def afterlogin_view(request):
+    
     if is_admin(request.user):
         return redirect('admin-dashboard')
     elif is_doctor(request.user):
@@ -147,12 +168,8 @@ def afterlogin_view(request):
             return redirect('patient-dashboard')
         else:
             return render(request,'hospital/patient_wait_for_approval.html')
-
-
-
-
-
-
+        
+    
 
 
 #---------------------------------------------------------------------------------
@@ -243,7 +260,7 @@ def update_doctor_view(request,pk):
                 
                 return redirect('admin-view-doctor')
     except Exception as e:
-        logging.error("error in update doctor view, error is {}".format(e))
+        logging.error("error in update_doctor_view, error is {}".format(e))
         return redirect('admin-view-doctor')
     return render(request,'hospital/admin_update_doctor.html',context=mydict)
 
@@ -274,7 +291,7 @@ def admin_add_doctor_view(request):
                 my_doctor_group[0].user_set.add(user)
                 return HttpResponseRedirect('admin-view-doctor')
             else:
-                logging.error("invalid form with data exist in admin view doctor")
+                logging.error("invalid form with data exist in admin doctor view")
                 return HttpResponseRedirect('admin-add-doctor')
     except Exception as e:
         logging.error("error in admin add doctor view, error is {}".format(e))
@@ -344,7 +361,7 @@ def admin_view_doctor_specialisation_view(request):
 @user_passes_test(is_admin)
 def admin_patient_view(request):
     return render(request,'hospital/admin_patient.html')
-
+    
 
 
 @login_required(login_url='adminlogin')
@@ -352,7 +369,7 @@ def admin_patient_view(request):
 def admin_view_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_patient.html',{'patients':patients})
-
+    
 
 
 @login_required(login_url='adminlogin')
