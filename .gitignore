@@ -136,3 +136,6 @@ dmypy.json
 
 #secrity file
 #secret.py
+
+#static
+static/profile_pic
