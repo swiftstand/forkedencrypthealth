@@ -1,0 +1,14 @@
+GET http://localhost:10147/transactions
+
+###
+POST http://localhost:10147/transactions
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "amountPaid": "0",
+    "totalAmount": "1000"
+}
+
+###
+GET http://localhost:10147/transactions/0000000
