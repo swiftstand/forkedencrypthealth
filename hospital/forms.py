@@ -28,6 +28,10 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','profile_pic']
 
 
+class DiagnosisForm(forms.ModelForm):
+    class Meta:
+        model=models.Diagnosis
+        fields=['first_name', 'last_name','mobile','feedback', 'symptoms', 'address', 'lab_work_required']
 
 #for teacher related form
 class PatientUserForm(forms.ModelForm):
@@ -44,7 +48,7 @@ class PatientForm(forms.ModelForm):
     assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic']
+        fields=['address','mobile','status','symptoms','profile_pic', 'medicalHistory']
 
 
 

@@ -286,7 +286,6 @@ def admin_view_patient_view(request):
     return render(request,'hospital/admin_view_patient.html',{'patients':patients})
 
 
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def delete_patient_from_hospital_view(request,pk):
@@ -390,7 +389,6 @@ def reject_patient_view(request,pk):
 def admin_discharge_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'hospital/admin_discharge_patient.html',{'patients':patients})
-
 
 
 @login_required(login_url='adminlogin')
@@ -590,9 +588,6 @@ def doctor_patient_view(request):
     return render(request,'hospital/doctor_patient.html',context=mydict)
 
 
-
-
-
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_view_patient_view(request):
@@ -600,6 +595,30 @@ def doctor_view_patient_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_update_patient_view(request,pk):
+    patient = models.Patient.objects.get(id=pk)
+    user = models.User.objects.get(id=patient.user_id)
+
+    userForm = forms.PatientUserForm(instance=user)
+    patientForm = forms.PatientForm(request.FILES, instance=patient)
+    mydict = {'userForm': userForm, 'patientForm': patientForm}
+    if request.method == 'POST':
+        userForm = forms.PatientUserForm(request.POST, instance=user)
+        patientForm = forms.PatientForm(request.POST, request.FILES, instance=patient)
+
+        if patientForm.is_valid():
+            # user = userForm.save()
+            # user.set_password(user.password)
+            # user.save()
+            patient = patientForm.save(commit=False)
+            patient.status = True
+            patient.assignedDoctorId = request.POST.get('assignedDoctorId')
+            patient.save()
+            return redirect('doctor-view-patient')
+    return render(request, 'hospital/doctor_view_patient.html', context=mydict)
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -611,6 +630,12 @@ def search_view(request):
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
 
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_view_prescription_view(request):
+    patients=models.Patient.objects.all().filter(status=True,assignedDoctorId=request.user.id)
+    doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
+    return render(request,'hospital/doctor_view_prescription.html',{'patients':patients,'doctor':doctor})
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -673,6 +698,100 @@ def delete_appointment_view(request,pk):
 
 
 
+
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_create_diagnosis_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    diagnosis=models.Diagnosis.objects
+    days=date.today()
+    assignedDoctor=models.User.objects.all().filter(id=patient.assignedDoctorId)
+    patientDict={
+        'patientId':pk,
+        'name':patient.get_name,
+        'mobile':patient.mobile,
+        'address':patient.address,
+        'symptoms':patient.symptoms,
+        'todayDate':date.today(),
+        'assignedDoctorName':assignedDoctor[0].first_name,
+        # 'labtests': diagnosis.labtests,
+        # 'lab_work_required' : diagnosis.lab_work_required,
+
+    }
+    if request.method == 'POST':
+
+        #for updating to database patientDischargeDetails (pDD)
+        pDR=models.Diagnosis()
+        pDR.patientId=pk
+        pDR.patientName=patient.get_name
+        pDR.assignedDoctorName=assignedDoctor[0].first_name
+        pDR.address=patient.address
+        pDR.mobile=patient.mobile
+        pDR.symptoms=patient.symptoms
+        # pDR.labtests = diagnosis.labtests
+        pDR.lab_work_required = diagnosis.lab_work_required
+        pDR.save()
+
+        return render(request,'hospital/doctor_create_diagnosis.html',context=patientDict)
+
+    return render(request,'hospital/doctor_create_diagnosis.html',context=patientDict)
+
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_create_prescription_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    diagnosis=models.Diagnosis.objects
+    prescription=models.Prescription.objects
+    days=date.today()
+    assignedDoctor=models.User.objects.all().filter(id=patient.assignedDoctorId)
+    patientDict={
+        'patientId':pk,
+        'name':patient.get_name,
+        'mobile':patient.mobile,
+        'address':patient.address,
+        'symptoms':patient.symptoms,
+        'todayDate':date.today(),
+        'assignedDoctorName':assignedDoctor[0].first_name,
+        'medicineName':  prescription.medicineName,
+        'description': prescription.description,
+        # 'lab_work_required' : diagnosis.lab_work_required,
+
+    }
+    if request.method == 'POST':
+
+        #for updating to database patientPrescriptionDetails (pPD)
+        pPD=models.Diagnosis()
+        pPD.patientId=pk
+        pPD.patientName=patient.get_name
+        pPD.assignedDoctorName=assignedDoctor[0].first_name
+        pPD.address=patient.address
+        pPD.mobile=patient.mobile
+        pPD.symptoms=patient.symptoms
+        # pDR.labtests = diagnosis.labtests
+        pPD.lab_work_required = diagnosis.lab_work_required
+        pPD.medicineName = prescription.medicineName
+        pPD.description = prescription.description
+        pPD.save()
+
+        return render(request,'hospital/doctor_create_prescription.html',context=patientDict)
+
+    return render(request,'hospital/doctor_create_prescription.html',context=patientDict)
+
+
+def download_diagnosis_pdf_view(request,pk):
+    diagnosisDetails=models.Diagnosis.objects.all().filter(patientId=pk).order_by('-id')[:1]
+    dischargeDetails = models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
+    dict={
+        'patientName':dischargeDetails[0].patientName,
+        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
+        'address':dischargeDetails[0].address,
+        'mobile':dischargeDetails[0].mobile,
+        'symptoms':dischargeDetails[0].symptoms,
+        'lab_work_required': diagnosisDetails[0].lab_work_required,
+    }
+    return render_to_pdf('hospital/download_bill.html',dict)
 #---------------------------------------------------------------------------------
 #------------------------ DOCTOR RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
