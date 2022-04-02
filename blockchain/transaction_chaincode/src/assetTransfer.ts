@@ -11,13 +11,15 @@ export class AssetTransferContract extends Contract {
         const assets: Asset[] = [
             {
                 ID: 'asset1',
+                PatientID: 'patient1',
                 AmtPaid: 0,
-                TotalAmt: 100
+                AmtRemaining: 200
             },
             {
                 ID: 'asset2',
+                PatientID: 'patient2',
                 AmtPaid: 100,
-                TotalAmt: 200
+                AmtRemaining: 200
             },
         ];
 
@@ -33,7 +35,13 @@ export class AssetTransferContract extends Contract {
     }
 
     @Transaction()
-    public async CreateAsset(ctx: Context, id: string, paid: number, total: number): Promise<void> {
+    public async CreateAsset(
+        ctx: Context,
+        id: string,
+        patientID: string,
+        paid: number,
+        remaining: number
+    ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (exists) {
             throw new Error(`The asset ${id} already exists`);
@@ -41,8 +49,9 @@ export class AssetTransferContract extends Contract {
 
         const asset = {
             ID: id,
+            PatientID: patientID,
             AmtPaid: paid,
-            TotalAmt: total,
+            AmtRemaining: remaining,
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
@@ -60,7 +69,12 @@ export class AssetTransferContract extends Contract {
 
     // UpdateAsset updates an existing asset in the world state with provided parameters.
     @Transaction()
-    public async UpdateAsset(ctx: Context, id: string, paid: number, total: number): Promise<void> {
+    public async UpdateAsset(ctx: Context,
+        id: string,
+        patientID: string,
+        paid: number,
+        remaining: number
+    ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
             throw new Error(`The asset ${id} does not exist`);
@@ -69,8 +83,9 @@ export class AssetTransferContract extends Contract {
         // overwriting original asset with new asset
         const updatedAsset = {
             ID: id,
+            PatientID: patientID,
             AmtPaid: paid,
-            TotalAmt: total,
+            AmtRemaining: remaining,
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         return ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(updatedAsset))));
@@ -94,18 +109,18 @@ export class AssetTransferContract extends Contract {
         return assetJSON && assetJSON.length > 0;
     }
 
-    // TransferAsset updates the owner field of asset with given id in the world state, and returns the old owner.
-    // This method could be used to update only the amount field of a transaction
-    // @Transaction()
-    // public async PayMoney(ctx: Context, id: string, amount: number): Promise<string> {
-        // const assetString = await this.ReadAsset(ctx, id);
-        // const asset = JSON.parse(assetString);
-        // const oldPaid = asset.AmtPaid;
-        // asset.AmtPaid = oldPaid + amount;
-        // // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-        // await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
-        // return oldPaid;
-    // }
+    // This method updates the current amount paid and remaining amount of a transaction
+    @Transaction()
+    public async PayMoney(ctx: Context, id: string, amount: number): Promise<string> {
+        const assetString = await this.ReadAsset(ctx, id);
+        const asset = JSON.parse(assetString);
+        const oldRemaining = asset.AmtRemaining;
+        asset.AmtPaid = oldRemaining + amount;
+        asset.AmtRemaining = oldRemaining - amount;
+        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
+        return oldRemaining;
+    }
 
     // GetAllAssets returns all assets found in the world state.
     @Transaction(false)

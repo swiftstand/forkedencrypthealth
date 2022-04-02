@@ -9,8 +9,12 @@ export class Asset {
     public ID: string;
 
     @Property()
+    public PatientID: string;
+
+    @Property()
     public AmtPaid: number;
 
     @Property()
-    public TotalAmt: number;
+    public AmtRemaining: number;
+
 }

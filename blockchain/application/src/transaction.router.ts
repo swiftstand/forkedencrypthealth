@@ -1,4 +1,5 @@
 import { Contract } from '@hyperledger/fabric-gateway';
+import { ContractImpl } from '@hyperledger/fabric-gateway/dist/contract';
 import express from 'express';
 import { TextDecoder } from 'util';
 
@@ -60,16 +61,18 @@ transactionRouter.post('/', async (req, res) => {
         const contract = req.app.locals['contracts'].transactionContract as Contract;
 
         const assetID = req.body.ID;
+        const patientID = req.body.patientID;
         const amountPaid = req.body.amountPaid;
-        const totalAmount = req.body.totalAmount;
+        const amountRemaining = req.body.amountRemaining;
 
         const commit = await contract.submitAsync(
             'CreateAsset',
             {
                 arguments: [
                     assetID,
+                    patientID,
                     amountPaid,
-                    totalAmount
+                    amountRemaining
                 ]
             }
         )
@@ -100,5 +103,22 @@ transactionRouter.post('/', async (req, res) => {
         }
     }
     console.log('\n --> End create transaction <--');
+});
+
+transactionRouter.patch('/:id', async (req, res) => {
+    let updateAmount;
+    if (req.body.amountPaid != null) {
+        updateAmount = req.body.amountPaid;
+    } else {
+        res.status(400).json({ messgae: 'You must provide the amountPaid key in body.' });
+    }
+
+    try {
+        const contract = req.app.locals['contracts'].transactionContract as Contract;
+
+        const commit = await contract.submitAsync(
+            'PayMoney',
+        )
+    }
 
 })
