@@ -14,4 +14,10 @@ export class Asset {
     @Property()
     public OperationsPerformed: Array<string>;
 
+    @Property()
+    public ClaimApproved: boolean;
+
+    @Property()
+    public FundsDispersed: boolean;
+
 }

@@ -9,15 +9,18 @@ export class Asset {
     public ID: string;
 
     @Property()
-    public PatientID: String;
+    public PatientID: string;
 
     @Property()
-    public DoctorID: String;
+    public DoctorID: string;
 
     @Property()
     public Diagnosis: string;
 
     @Property()
     public TestsRequested: Array<string>;
+
+    @Property()
+    public Perscriptions: Array<string>;
 
 }

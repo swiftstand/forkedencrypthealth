@@ -1,5 +1,4 @@
 import { Contract } from '@hyperledger/fabric-gateway';
-import { ContractImpl } from '@hyperledger/fabric-gateway/dist/contract';
 import express from 'express';
 import { TextDecoder } from 'util';
 
@@ -75,7 +74,7 @@ transactionRouter.post('/', async (req, res) => {
                     amountRemaining
                 ]
             }
-        )
+        );
 
         console.log(`*** Successfully submitted create transaction with assetID: ${assetID}`);
         console.log('*** Waiting for transaction commit');
@@ -85,7 +84,7 @@ transactionRouter.post('/', async (req, res) => {
             console.log('*** Transaction failed.');
             res.status(status.code).json({
                 message: `Transaction ${status.transactionId} failed to commit.`
-            })
+            });
         } else {
             console.log('*** Transaction comitted successfully.');
             res.status(201).json(
@@ -93,7 +92,7 @@ transactionRouter.post('/', async (req, res) => {
                     'assetID': assetID,
                     'txID': status.transactionId
                 }
-            )
+            );
         }
     } catch (err) {
         if (err instanceof Error) {
@@ -105,10 +104,13 @@ transactionRouter.post('/', async (req, res) => {
     console.log('\n --> End create transaction <--');
 });
 
-transactionRouter.patch('/:id', async (req, res) => {
+transactionRouter.patch('/:transactionID', async (req, res) => {
+    const assetID = req.params.transactionID;
+    console.log(`Updating asset: ${assetID}`);
     let updateAmount;
     if (req.body.amountPaid != null) {
         updateAmount = req.body.amountPaid;
+        console.log(`Will pay ${updateAmount}`);
     } else {
         res.status(400).json({ messgae: 'You must provide the amountPaid key in body.' });
     }
@@ -118,7 +120,37 @@ transactionRouter.patch('/:id', async (req, res) => {
 
         const commit = await contract.submitAsync(
             'PayMoney',
-        )
-    }
+            {
+                arguments: [
+                    assetID,
+                    updateAmount
+                ]
+            }
+        );
 
-})
+        console.log(`*** Successfully submitted update transaction with assetID: ${assetID}`);
+        console.log('*** Waiting for transaction commit');
+
+        const status = await(commit.getStatus());
+        if (!status.successful) {
+            console.log('*** Transaction failed.');
+            res.status(status.code).json({
+                message: `Transaction ${status.transactionId} failed to commit.`
+            });
+        } else {
+            console.log('*** Transaction comitted successfully.');
+            res.status(201).json(
+                {
+                    'assetID': assetID,
+                    'txID': status.transactionId
+                }
+            );
+        }
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json({ message: err.message });
+        } else {
+            res.status(500).json({ message: String(err) });
+        }
+    }
+});

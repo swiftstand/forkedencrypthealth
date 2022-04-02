@@ -12,3 +12,57 @@ Content-Type: application/json
 
 ###
 GET http://localhost:10147/transactions/0000000
+
+###
+PATCH http://localhost:10147/transactions/0000000
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "amountPaid": "300"
+}
+
+###
+GET http://localhost:10147/diagnosis
+
+###
+POST http://localhost:10147/diagnosis
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "patientID": "0000000",
+    "doctorID": "0000000",
+    "diagnosis": "Heart Attack",
+    "testsRequested": [
+        "Blood test",
+        "cholestorol test"
+    ],
+    "perscriptions": [
+        "Blood thinner",
+        "Heart medicine"
+    ]
+}
+
+###
+GET http://localhost:10147/diagnosis/0000000
+
+###
+PATCH http://localhost:10147/diagnosis/0000000
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "patientID": "0000000",
+    "doctorID": "0000000",
+    "diagnosis": "Heart Attack",
+    "testsRequested": [
+        "Blood test",
+        "cholestorol test",
+        "Open Bypass surgery"
+    ],
+    "perscriptions": [
+        "Blood thinner",
+        "Heart medicine"
+    ]
+}

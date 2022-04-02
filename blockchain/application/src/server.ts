@@ -1,6 +1,7 @@
 import * as config from './config';
 import express from 'express';
 import helmet from 'helmet';
+import { diagnosisRouter } from './diagnosis.router';
 import { transactionRouter } from './transaction.router';
 import {
     createGateway,
@@ -20,6 +21,7 @@ async function main(): Promise<void> {
         app.use(helmet());
     }
 
+    app.use('/diagnosis', diagnosisRouter);
     app.use('/transactions', transactionRouter);
 
     const grpcConnection = await createClientConnection();

@@ -14,7 +14,10 @@ export class AssetTransferContract extends Contract {
                 PatientID: 'patient1',
                 DoctorID: 'doctor1',
                 Diagnosis: 'dead',
-                TestsRequested: []
+                TestsRequested: [],
+                Perscriptions: [
+                    'Crack Cocaine'
+                ]
             },
             {
                 ID: 'asset2',
@@ -24,6 +27,9 @@ export class AssetTransferContract extends Contract {
                 TestsRequested: [
                     'Nose swab',
                     'Quarantine'
+                ],
+                Perscriptions: [
+                    'What Joe Rogan Got'
                 ]
             },
         ];
@@ -45,7 +51,8 @@ export class AssetTransferContract extends Contract {
         patientID: string,
         doctorID: string,
         diagnosis: string,
-        testsRequested: Array<String>
+        testsRequested: Array<String>,
+        perscriptions: Array<String>
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (exists) {
@@ -57,7 +64,8 @@ export class AssetTransferContract extends Contract {
             PatientID: patientID,
             DoctorID: doctorID,
             Diagnosis: diagnosis,
-            TestsRequested: testsRequested
+            TestsRequested: testsRequested,
+            Perscriptions: perscriptions
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
@@ -80,7 +88,8 @@ export class AssetTransferContract extends Contract {
         patientID: string,
         doctorID: string,
         diagnosis: string,
-        testsRequested: Array<String>
+        testsRequested: Array<String>,
+        perscriptions: Array<String>
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
@@ -93,7 +102,8 @@ export class AssetTransferContract extends Contract {
             PatientID: patientID,
             DoctorID: doctorID,
             Diagnosis: diagnosis,
-            TestsRequested: testsRequested
+            TestsRequested: testsRequested,
+            Perscriptions: perscriptions
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         return ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(updatedAsset))));
