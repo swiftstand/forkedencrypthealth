@@ -9,15 +9,15 @@ export class Asset {
     public ID: string;
 
     @Property()
+    public PatientID: string;
+
+    @Property()
+    public PolicyNumber: string;
+
+    @Property()
     public RequestedAmt: number;
 
     @Property()
-    public OperationsPerformed: Array<string>;
-
-    @Property()
-    public ClaimApproved: boolean;
-
-    @Property()
-    public FundsDispersed: boolean;
+    public RequestStatus: string;
 
 }

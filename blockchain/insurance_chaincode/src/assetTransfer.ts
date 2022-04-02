@@ -11,19 +11,10 @@ export class AssetTransferContract extends Contract {
         const assets: Asset[] = [
             {
                 ID: 'asset1',
+                PatientID: 'patient 1',
+                PolicyNumber: 'approve_1000',
                 RequestedAmt: 1000,
-                OperationsPerformed: [
-                    'Blood test',
-                    'MRI'
-                ]
-            },
-            {
-                ID: 'asset2',
-                RequestedAmt: 10000,
-                OperationsPerformed: [
-                    'Heart Surgery',
-                    'Therapy'
-                ]
+                RequestStatus: 'new'
             },
         ];
 
@@ -42,8 +33,10 @@ export class AssetTransferContract extends Contract {
     public async CreateAsset(
         ctx: Context,
         id: string,
-        requested: number,
-        operations: Array<String>
+        patientID: string,
+        policyNumber: string,
+        requestedAmt: number,
+        requestStatus: string
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (exists) {
@@ -52,8 +45,10 @@ export class AssetTransferContract extends Contract {
 
         const asset = {
             ID: id,
-            RequestedAmt: requested,
-            OperationsPerformed: operations
+            PatientID: patientID,
+            PolicyNumber: policyNumber,
+            RequestedAmt: requestedAmt,
+            RequestStatus: requestStatus
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
@@ -74,8 +69,10 @@ export class AssetTransferContract extends Contract {
     public async UpdateAsset(
         ctx: Context,
         id: string,
-        requested: number,
-        operations: Array<String>
+        patientID: string,
+        policyNumber: string,
+        requestedAmt: number,
+        requestStatus: string
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
@@ -85,8 +82,10 @@ export class AssetTransferContract extends Contract {
         // overwriting original asset with new asset
         const updatedAsset = {
             ID: id,
-            RequestedAmt: requested,
-            OperationsPerformed: operations
+            PatientID: patientID,
+            PolicyNumber: policyNumber,
+            RequestedAmt: requestedAmt,
+            RequestStatus: requestStatus
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         return ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(updatedAsset))));
@@ -111,16 +110,16 @@ export class AssetTransferContract extends Contract {
     }
 
     // TransferAsset updates the owner field of asset with given id in the world state, and returns the old owner.
-    // @Transaction()
-    // public async PayMoney(ctx: Context, id: string, amount: number): Promise<string> {
-        // const assetString = await this.ReadAsset(ctx, id);
-        // const asset = JSON.parse(assetString);
-        // const oldPaid = asset.AmtPaid;
-        // asset.AmtPaid = oldPaid + amount;
-        // // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-        // await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
-        // return oldPaid;
-    // }
+    @Transaction()
+    public async UpdateStatus(ctx: Context, id: string, status: string): Promise<string> {
+        const assetString = await this.ReadAsset(ctx, id);
+        const asset = JSON.parse(assetString);
+        const oldStatus = asset.RequestStatus;
+        asset.RequestStatus = status;
+        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
+        return oldStatus;
+    }
 
     // GetAllAssets returns all assets found in the world state.
     @Transaction(false)

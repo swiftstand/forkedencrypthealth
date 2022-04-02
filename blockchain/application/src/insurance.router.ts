@@ -2,15 +2,15 @@ import { Contract } from '@hyperledger/fabric-gateway';
 import express from 'express';
 import { TextDecoder } from 'util';
 
-export const diagnosisRouter = express.Router();
+export const insuranceRouter = express.Router();
 const utf8Decoder = new TextDecoder();
 
-/** Get all diagnosis.  **/
-diagnosisRouter.get('/', async (req, res) => {
-    console.log('\n--> Begin get all diagnosiss <--')
+/** Get all insurance.  **/
+insuranceRouter.get('/', async (req, res) => {
+    console.log('\n--> Begin get all insurances <--')
 
     try {
-        const contract = req.app.locals['contracts'].diagnosisContract as Contract;
+        const contract = req.app.locals['contracts'].insuranceContract as Contract;
 
         const resultBytes = await contract.evaluateTransaction('GetAllAssets');
 
@@ -25,17 +25,17 @@ diagnosisRouter.get('/', async (req, res) => {
         }
     }
 
-    console.log('\n--> End get all diagnosiss <--')
+    console.log('\n--> End get all insurances <--')
 });
 
-diagnosisRouter.get('/:diagnosisID', async(req, res) => {
-    console.log('\n --> Begin get 1 diagnosis <--');
+insuranceRouter.get('/:insuranceID', async(req, res) => {
+    console.log('\n --> Begin get 1 insurance <--');
 
-    const assetID = req.params.diagnosisID;
+    const assetID = req.params.insuranceID;
     console.log(`Getting assetID ${assetID}`);
 
     try {
-        const contract = req.app.locals['contracts'].diagnosisContract as Contract;
+        const contract = req.app.locals['contracts'].insuranceContract as Contract;
 
         const resultBytes = await contract.evaluateTransaction('ReadAsset', assetID);
 
@@ -50,21 +50,20 @@ diagnosisRouter.get('/:diagnosisID', async(req, res) => {
         }
     }
 
-    console.log('\n --> End get 1 diagnosis <--');
+    console.log('\n --> End get 1 insurance <--');
 });
 
-diagnosisRouter.post('/', async (req, res) => {
-    console.log('\n --> Begin create diagnosis <--');
+insuranceRouter.post('/', async (req, res) => {
+    console.log('\n --> Begin create insurance <--');
 
     try {
-        const contract = req.app.locals['contracts'].diagnosisContract as Contract;
+        const contract = req.app.locals['contracts'].insuranceContract as Contract;
 
         const assetID = req.body.ID;
         const patientID = req.body.patientID;
-        const doctorID = req.body.doctorID;
-        const diagnosis = req.body.diagnosis;
-        const testsRequested = req.body.testsRequested;
-        const perscriptions = req.body.perscriptions;
+        const policyNumber = req.body.policyNumber;
+        const requestedAmt = req.body.requestedAmt;
+        const requestStatus = req.body.requestStatus;
 
         const commit = await contract.submitAsync(
             'CreateAsset',
@@ -72,15 +71,14 @@ diagnosisRouter.post('/', async (req, res) => {
                 arguments: [
                     assetID,
                     patientID,
-                    doctorID,
-                    diagnosis,
-                    testsRequested,
-                    perscriptions
+                    policyNumber,
+                    requestedAmt,
+                    requestStatus
                 ]
             }
         );
 
-        console.log(`*** Successfully submitted create diagnosis with assetID: ${assetID}`);
+        console.log(`*** Successfully submitted create insurance with assetID: ${assetID}`);
         console.log('*** Waiting for transaction commit');
 
         const status = await(commit.getStatus());
@@ -105,42 +103,39 @@ diagnosisRouter.post('/', async (req, res) => {
             res.status(500).json({ message: String(err) });
         }
     }
-    console.log('\n --> End create diagnosis <--');
+    console.log('\n --> End create insurance <--');
 });
 
-diagnosisRouter.patch('/:diagnosisID', async (req, res) => {
-    const assetID = req.params.diagnosisID;
+insuranceRouter.patch('/:insuranceID', async (req, res) => {
+    const assetID = req.params.insuranceID;
     console.log(`Updating asset: ${assetID}`);
 
-    const patientID = req.body.patientID;
-    const doctorID = req.body.doctorID;
-    const diagnosis = req.body.diagnosis;
-    const testsRequested = req.body.testsRequested;
-    const perscriptions = req.body.perscriptions;
-
+    let updateStatus;
+    if (req.body.requestStatus != null) {
+        updateStatus = req.body.requestStatus;
+        console.log(`Will update status to ${updateStatus}`);
+    } else {
+        res.status(400).json({ message: 'You must provide requestStatus key in body.' });
+    }
     try {
-        const contract = req.app.locals['contracts'].diagnosisContract as Contract;
+        const contract = req.app.locals['contracts'].insuranceContract as Contract;
 
         const commit = await contract.submitAsync(
-            'UpdateAsset',
+            'UpdateStatus',
             {
                 arguments: [
                     assetID,
-                    patientID,
-                    doctorID,
-                    diagnosis,
-                    testsRequested,
-                    perscriptions
+                    updateStatus
                 ]
             }
         );
 
-        console.log(`*** Successfully submitted update diagnosis with assetID: ${assetID}`);
+        console.log(`*** Successfully submitted update insurance with assetID: ${assetID}`);
         console.log('*** Waiting for transaction commit');
 
         const status = await(commit.getStatus());
         if (!status.successful) {
-            console.log('*** diagnosis failed.');
+            console.log('*** insurance failed.');
             res.status(status.code).json({
                 message: `Transaction ${status.transactionId} failed to commit.`
             });

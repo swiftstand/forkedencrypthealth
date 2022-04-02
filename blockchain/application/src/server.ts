@@ -2,6 +2,7 @@ import * as config from './config';
 import express from 'express';
 import helmet from 'helmet';
 import { diagnosisRouter } from './diagnosis.router';
+import { insuranceRouter } from './insurance.router';
 import { transactionRouter } from './transaction.router';
 import {
     createGateway,
@@ -22,6 +23,7 @@ async function main(): Promise<void> {
     }
 
     app.use('/diagnosis', diagnosisRouter);
+    app.use('/insurance', insuranceRouter);
     app.use('/transactions', transactionRouter);
 
     const grpcConnection = await createClientConnection();
