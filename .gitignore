@@ -134,8 +134,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#secrity file
-#secret.py
-
-#static
+static
 static/profile_pic
