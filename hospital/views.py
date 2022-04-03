@@ -1,5 +1,4 @@
 from ast import ExceptHandler
-from genericpath import exists
 from django.shortcuts import render,redirect,reverse
 from django.contrib import messages
 from hospitalmanagement.settings import LOG_PATH
@@ -16,7 +15,7 @@ import logging
 import os
 
 #log files
-os.makedirs('logs',exist_ok=True)
+os.makedirs('logs', exist_ok=True)
 logFileName= os.path.join(LOG_PATH, str(datetime.now().strftime("%m_%d_%Y") + ".log"))
 logging.basicConfig(filename=logFileName,  format='%(asctime)s %(message)s', level=logging.ERROR)
 
