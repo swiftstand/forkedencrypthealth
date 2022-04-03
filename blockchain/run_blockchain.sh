@@ -11,7 +11,7 @@ echo "Done creating network"
 trap "bash network/network.sh down" EXIT
 
 echo "Starting rest server"
-bash run_rest_server.sh
+bash start_rest_server.sh
 echo "Exiting rest server"
 
 echo "Shutting network down"

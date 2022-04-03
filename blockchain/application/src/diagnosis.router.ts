@@ -16,7 +16,12 @@ diagnosisRouter.get('/', async (req, res) => {
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
-        res.json(result);
+        const parsedResult = result.map((user: any) => {
+            user['Perscriptions'] = JSON.parse(user['Perscriptions']);
+            user['TestsRequested'] = JSON.parse(user['TestsRequested']);
+            return user;
+        });
+        res.json(parsedResult);
     } catch (err) {
         if (err instanceof Error) {
             res.status(500).json({ message: err.message });
@@ -41,6 +46,8 @@ diagnosisRouter.get('/:diagnosisID', async(req, res) => {
 
         const resultJson = utf8Decoder.decode(resultBytes);
         const result = JSON.parse(resultJson);
+        result['Perscriptions'] = JSON.parse(result['Perscriptions']);
+        result['TestsRequested'] = JSON.parse(result['TestsRequested']);
         res.json(result);
     } catch (err) {
         if (err instanceof Error) {
@@ -63,8 +70,8 @@ diagnosisRouter.post('/', async (req, res) => {
         const patientID = req.body.patientID;
         const doctorID = req.body.doctorID;
         const diagnosis = req.body.diagnosis;
-        const testsRequested = req.body.testsRequested;
-        const perscriptions = req.body.perscriptions;
+        const testsRequested = JSON.stringify(req.body.testsRequested);
+        const perscriptions = JSON.stringify(req.body.perscriptions);
 
         const commit = await contract.submitAsync(
             'CreateAsset',
@@ -109,6 +116,8 @@ diagnosisRouter.post('/', async (req, res) => {
 });
 
 diagnosisRouter.patch('/:diagnosisID', async (req, res) => {
+    console.log('\n --> Begin update diagnosis <--');
+
     const assetID = req.params.diagnosisID;
     console.log(`Updating asset: ${assetID}`);
 
@@ -160,4 +169,6 @@ diagnosisRouter.patch('/:diagnosisID', async (req, res) => {
             res.status(500).json({ message: String(err) });
         }
     }
+
+    console.log('\n --> End update diagnosis <--');
 });

@@ -115,7 +115,8 @@ export class AssetTransferContract extends Contract {
         const assetString = await this.ReadAsset(ctx, id);
         const asset = JSON.parse(assetString);
         const oldRemaining = asset.AmtRemaining;
-        asset.AmtPaid = oldRemaining + amount;
+        const oldPaid = asset.AmtPaid;
+        asset.AmtPaid = oldPaid + amount;
         asset.AmtRemaining = oldRemaining - amount;
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));

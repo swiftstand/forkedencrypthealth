@@ -116,6 +116,7 @@ insuranceRouter.patch('/:insuranceID', async (req, res) => {
         console.log(`Will update status to ${updateStatus}`);
     } else {
         res.status(400).json({ message: 'You must provide requestStatus key in body.' });
+        return;
     }
     try {
         const contract = req.app.locals['contracts'].insuranceContract as Contract;

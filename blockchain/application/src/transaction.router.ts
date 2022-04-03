@@ -113,6 +113,7 @@ transactionRouter.patch('/:transactionID', async (req, res) => {
         console.log(`Will pay ${updateAmount}`);
     } else {
         res.status(400).json({ messgae: 'You must provide the amountPaid key in body.' });
+        return;
     }
 
     try {

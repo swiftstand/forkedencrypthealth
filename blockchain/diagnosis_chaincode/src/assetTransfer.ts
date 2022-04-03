@@ -6,44 +6,44 @@ import {Asset} from './asset';
 @Info({title: 'AssetTransfer', description: 'Smart contract for trading assets'})
 export class AssetTransferContract extends Contract {
 
-    @Transaction()
-    public async InitLedger(ctx: Context): Promise<void> {
-        const assets: Asset[] = [
-            {
-                ID: 'asset1',
-                PatientID: 'patient1',
-                DoctorID: 'doctor1',
-                Diagnosis: 'dead',
-                TestsRequested: [],
-                Perscriptions: [
-                    'Crack Cocaine'
-                ]
-            },
-            {
-                ID: 'asset2',
-                PatientID: 'patient2',
-                DoctorID: 'doctor1',
-                Diagnosis: 'Corona Virus',
-                TestsRequested: [
-                    'Nose swab',
-                    'Quarantine'
-                ],
-                Perscriptions: [
-                    'What Joe Rogan Got'
-                ]
-            },
-        ];
+    // @Transaction()
+    // public async InitLedger(ctx: Context): Promise<void> {
+    //     const assets: Asset[] = [
+    //         {
+    //             ID: 'asset1',
+    //             PatientID: 'patient1',
+    //             DoctorID: 'doctor1',
+    //             Diagnosis: 'dead',
+    //             TestsRequested: [],
+    //             Perscriptions: [
+    //                 'Crack Cocaine'
+    //             ]
+    //         },
+    //         {
+    //             ID: 'asset2',
+    //             PatientID: 'patient2',
+    //             DoctorID: 'doctor1',
+    //             Diagnosis: 'Corona Virus',
+    //             TestsRequested: [
+    //                 'Nose swab',
+    //                 'Quarantine'
+    //             ],
+    //             Perscriptions: [
+    //                 'What Joe Rogan Got'
+    //             ]
+    //         },
+    //     ];
 
-        for (const asset of assets) {
-            asset.docType = 'asset';
-            // example of how to write to world state deterministically
-            // use convetion of alphabetic order
-            // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-            // when retrieving data, in any lang, the order of data will be the same and consequently also the corresonding hash
-            await ctx.stub.putState(asset.ID, Buffer.from(stringify(sortKeysRecursive(asset))));
-            console.info(`Asset ${asset.ID} initialized`);
-        }
-    }
+    //     for (const asset of assets) {
+    //         asset.docType = 'asset';
+    //         // example of how to write to world state deterministically
+    //         // use convetion of alphabetic order
+    //         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+    //         // when retrieving data, in any lang, the order of data will be the same and consequently also the corresonding hash
+    //         await ctx.stub.putState(asset.ID, Buffer.from(stringify(sortKeysRecursive(asset))));
+    //         console.info(`Asset ${asset.ID} initialized`);
+    //     }
+    // }
 
     @Transaction()
     public async CreateAsset(ctx: Context,
@@ -51,8 +51,8 @@ export class AssetTransferContract extends Contract {
         patientID: string,
         doctorID: string,
         diagnosis: string,
-        testsRequested: Array<String>,
-        perscriptions: Array<String>
+        testsRequested: string,
+        perscriptions: string
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (exists) {
@@ -67,6 +67,7 @@ export class AssetTransferContract extends Contract {
             TestsRequested: testsRequested,
             Perscriptions: perscriptions
         };
+
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
     }
@@ -88,8 +89,8 @@ export class AssetTransferContract extends Contract {
         patientID: string,
         doctorID: string,
         diagnosis: string,
-        testsRequested: Array<String>,
-        perscriptions: Array<String>
+        testsRequested: string,
+        perscriptions: string
     ): Promise<void> {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
