@@ -259,22 +259,17 @@ def admin_dashboard_view(request):
     }
     return render(request,'hospital/admin_dashboard.html',context=mydict)
 
-
 # this view for sidebar click on admin page
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_doctor_view(request):
     return render(request,'hospital/admin_doctor.html')
 
-
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_doctor.html',{'doctors':doctors})
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -289,8 +284,6 @@ def delete_doctor_from_hospital_view(request,pk):
         logging.error("error in delete doctor view from hospital, error is {}".format(e))
         return redirect('admin-view-doctor')    
 
-
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def update_doctor_view(request,pk):
@@ -303,8 +296,6 @@ def update_doctor_view(request,pk):
         doctorForm=forms.DoctorForm(request.FILES,instance=doctor)
         mydict={'userForm':userForm,'doctorForm':doctorForm}
         if request.method=='POST':
-        
-
             userForm=forms.DoctorUserForm(request.POST,instance=user)
             doctorForm=forms.DoctorForm(request.POST,request.FILES,instance=doctor)
             if userForm.is_valid() and doctorForm.is_valid():
@@ -320,9 +311,6 @@ def update_doctor_view(request,pk):
         logging.error("error in update_doctor_view, error is {}".format(e))
         return redirect('admin-view-doctor')
     return render(request,'hospital/admin_update_doctor.html',context=mydict)
-
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -355,9 +343,7 @@ def admin_add_doctor_view(request):
         return redirect('admin-view-doctor')        
     return render(request,'hospital/admin_add_doctor.html',context=mydict)
 
-
 # approving doctor
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_approve_doctor_view(request):
@@ -370,46 +356,101 @@ def admin_approve_doctor_view(request):
         logging.error("error in admin_approve_doctor_view,error is {}".format(e))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
 
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def approve_doctor_view(request,pk):
+    #those whose approval are needed
     try:
-        doctor=models.Doctor.objects.get(id=pk)
-        doctor.status=True
-        doctor.save()
-        return redirect(reverse('admin-approve-doctor'))
+        doctors=models.Doctor.objects.all().filter(status=False)
+        return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
     except Exception as e:
-        logging.error("error in approve_doctor_view,error is {}".format(e))
-        return redirect('admin-approve-doctor')    
-
-
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def reject_doctor_view(request,pk):
-    try:
-
-        doctor=models.Doctor.objects.get(id=pk)
-        user=models.User.objects.get(id=doctor.user_id)
-        user.delete()
-        doctor.delete()
-        return redirect('admin-approve-doctor')
-    except Exception as e:
-        logging.error("error in reject_doctor_view,error is {}".format(e))
-        return redirect('admin-approve-doctor')    
-    
-
-
+        logging.error("error in admin_approve_doctor_view,error is {}".format(e))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_doctor_specialisation_view(request):
+    doctors=models.Doctor.objects.all().filter(status=True)
+    return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_patient_view(request):
+    return render(request,'hospital/admin_patient.html')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_view_patient_view(request):
+    patients=models.Patient.objects.all().filter(status=True)
+    return render(request,'hospital/admin_view_patient.html',{'patients':patients})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def delete_patient_from_hospital_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    user=models.User.objects.get(id=patient.user_id)
+    user.delete()
+    patient.delete()
+    return redirect('admin-view-patient')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def update_patient_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    user=models.User.objects.get(id=patient.user_id)
+
+    userForm=forms.PatientUserForm(instance=user)
+    patientForm=forms.PatientForm(request.FILES,instance=patient)
+    mydict={'userForm':userForm,'patientForm':patientForm}
+    if request.method=='POST':
+        userForm=forms.PatientUserForm(request.POST,instance=user)
+        patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+        if userForm.is_valid() and patientForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            patient=patientForm.save(commit=False)
+            patient.status=True
+            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+            patient.save()
+            return redirect('admin-view-patient')
+    return render(request,'hospital/admin_update_patient.html',context=mydict)
+
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_add_patient_view(request):
     try:
-        doctors=models.Doctor.objects.all().filter(status=True)
-        return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
-    except Exception as e:
-        logging.error("error in admin view doctor specialisation view,error i {}".format(e))
-        return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+        userForm=forms.PatientUserForm()
+        patientForm=forms.PatientForm()
+        mydict={'userForm':userForm,'patientForm':patientForm}
+        if request.method=='POST':
+            userForm=forms.PatientUserForm(request.POST)
+            patientForm=forms.PatientForm(request.POST,request.FILES)
+            if userForm.is_valid() and patientForm.is_valid():
+                user=userForm.save()
+                user.set_password(user.password)
+                user.save()
+
+                patient=patientForm.save(commit=False)
+                patient.user=user
+                patient.status=True
+                patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+                patient.save()
+
+                my_patient_group = Group.objects.get_or_create(name='PATIENT')
+                my_patient_group[0].user_set.add(user)
+
+                return HttpResponseRedirect('admin-view-patient')
+
+            else:
+            
+                logging.error("invalid form with data exist in admin view patient")
+                return HttpResponseRedirect('admin-add-patient')
+    except Exception as e: 
+        logging.error("error in add admin patient view, error is {}".format(e))  
+        return redirect('admin-view-patient')        
+    return render(request,'hospital/admin_add_patient.html',context=mydict)
 
 # ------- Admin--LabStaff--Views ------- #
 
@@ -480,6 +521,31 @@ def admin_add_labstaff_view(request):
 
         return HttpResponseRedirect('admin-view-labstaff')
     return render(request,'hospital/admin_add_labstaff.html',context=mydict)
+
+#------------------FOR APPROVING PATIENT BY ADMIN----------------------
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_approve_patient_view(request):
+    #those whose approval are needed
+    patients=models.Patient.objects.all().filter(status=False)
+    return render(request,'hospital/admin_approve_patient.html',{'patients':patients})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def approve_patient_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    patient.status=True
+    patient.save()
+    return redirect(reverse('admin-approve-patient'))
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def reject_patient_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    user=models.User.objects.get(id=patient.user_id)
+    user.delete()
+    patient.delete()
+    return redirect('admin-approve-patient')
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -662,6 +728,8 @@ def discharge_patient_view(request,pk):
         'patientId':pk,
         'name':patient.get_name,
         'mobile':patient.mobile,
+        'InsuranceProvider': patient.patientInsuranceProvider,
+        'PolicyNumber': patient.patientPolicyNumber,
         'address':patient.address,
         'symptoms':patient.symptoms,
         'admitDate':patient.admitDate,
@@ -685,6 +753,8 @@ def discharge_patient_view(request,pk):
         pDD.assignedDoctorName=assignedDoctor[0].first_name
         pDD.address=patient.address
         pDD.mobile=patient.mobile
+        pDD.patientInsuranceProvider=patient.patientInsuranceProvider
+        pDD.patientPolicyNumber=patient.patientPolicyNumber
         pDD.symptoms=patient.symptoms
         pDD.admitDate=patient.admitDate
         pDD.releaseDate=date.today()
@@ -724,6 +794,8 @@ def download_pdf_view(request,pk):
         'address':dischargeDetails[0].address,
         'mobile':dischargeDetails[0].mobile,
         'symptoms':dischargeDetails[0].symptoms,
+        'patientInsuranceProvider':dischargeDetails[0].patientInsuranceProvider,
+        'patientPolicyNumber':dischargeDetails[0].patientPolicyNumber,
         'admitDate':dischargeDetails[0].admitDate,
         'releaseDate':dischargeDetails[0].releaseDate,
         'daySpent':dischargeDetails[0].daySpent,
@@ -944,7 +1016,6 @@ def doctor_dashboard_view(request):
     }
     return render(request,'hospital/doctor_dashboard.html',context=mydict)
 
-
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_patient_view(request):
@@ -959,7 +1030,6 @@ def doctor_view_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True,assignedDoctorId=request.user.id)
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
-
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -1532,18 +1602,21 @@ def download_diagnosis_pdf_view(request,pk):
 def patient_dashboard_view(request):
     patient=models.Patient.objects.get(user_id=request.user.id)
     doctor=models.Doctor.objects.get(user_id=patient.assignedDoctorId)
-    #------inurance- prem
-    #patient=models.Patient.objects.get(user_id=patient.assignedDoctorId)
     mydict={
     'patient':patient,
     'doctorName':doctor.get_name,
-    'doctorMobile':doctor.mobile,
-    'doctorAddress':doctor.address,
+    'patientMobile':patient.mobile,
+    'patientAddress':patient.address,
     'symptoms':patient.symptoms,
     'doctorDepartment':doctor.department,
     'admitDate':patient.admitDate,
+    'InsuranceProvider':patient.patientInsuranceProvider,
+    'PolicyNumber':patient.patientPolicyNumber,
+    'patientId':patient.id
     }
     return render(request,'hospital/patient_dashboard.html',context=mydict)
+
+
 
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
@@ -1563,7 +1636,57 @@ def patient_book_appointment_view(request):
         if appointmentForm.is_valid():
             print(request.POST.get('doctorId'))
             desc=request.POST.get('description')
+
             doctor=models.Doctor.objects.get(user_id=request.POST.get('doctorId'))
+            
+            if doctor.department == 'Cardiologist':
+                if 'heart' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
+            if doctor.department == 'Dermatologists':
+                if 'skin' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
+            if doctor.department == 'Emergency Medicine Specialists':
+                if 'fever' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
+            if doctor.department == 'Allergists/Immunologists':
+                if 'allergy' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
+            if doctor.department == 'Anesthesiologists':
+                if 'surgery' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
+            if doctor.department == 'Colon and Rectal Surgeons':
+                if 'cancer' in desc:
+                    pass
+                else:
+                    print('else')
+                    message="Please Choose Doctor According To Disease"
+                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
+
             appointment=appointmentForm.save(commit=False)
             appointment.doctorId=request.POST.get('doctorId')
             appointment.patientId=request.user.id #----user can choose any patient but only their info will be stored
@@ -1635,9 +1758,31 @@ def patient_insurance(request):
     appointments=models.Appointment.objects.all().filter(patientId=request.user.id)
     return render(request,'hospital/patient_insurance.html',{'appointments':appointments,'patient':patient})
 
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def update_patient_patient_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    user=models.User.objects.get(id=patient.user_id)
+
+    userForm=forms.PatientUserForm(instance=user)
+    patientForm=forms.PatientForm(request.FILES,instance=patient)
+    mydict={'userForm':userForm,'patientForm':patientForm}
+    if request.method=='POST':
+        userForm=forms.PatientUserForm(request.POST,instance=user)
+        patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+        if userForm.is_valid() and patientForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            patient=patientForm.save(commit=False)
+            patient.status=True
+            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+            patient.save()
+            return redirect('patient-dashboard')
+    return render(request,'hospital/admin_update_patient.html',context=mydict)
+
 #------------------------ PATIENT RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
-
 
 #---------------------------------------------------------------------------------
 #------------------------ INSURANCE RELATED VIEWS START ------------------------------
@@ -1668,7 +1813,6 @@ def insurance_dashboard_view(request):
     return render(request,'hospital/insurance_dashboard.html',context=mydict)
 
 # didnt change ends
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_patient_view(request):
@@ -1678,7 +1822,6 @@ def insurance_patient_view(request):
     return render(request,'hospital/insurance_patient.html',context=mydict)
 
 #this view is used for creating for opening requests
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_requests_view(request):
@@ -1688,7 +1831,6 @@ def insurance_requests_view(request):
     return render(request,'hospital/insurance_requests.html',context=mydict)
 
 #this view is used for creating new records
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_new_view(request):
@@ -1697,9 +1839,7 @@ def insurance_new_view(request):
     }
     return render(request,'hospital/insurance_new.html',context=mydict)
 
-
 #this view is used for creating new records
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_fund_dispersal_view(request):
@@ -1708,28 +1848,18 @@ def insurance_fund_dispersal_view(request):
     }
     return render(request,'hospital/insurance_fund_dispersal.html',context=mydict)
 
-
-
-
 #this view is used for new requests
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_new_requests_view(request):
     mydict={
     'insurance':models.Insurance.objects.get(user_id=request.user.id),
     # 'patients':models.Insurance.objects.filter(status='new-requests'),
-
-
      #for profile picture of insurance agent in sidebar
     }
     return render(request,'hospital/insurance_new_requests.html',context=mydict)
 
-
-
-
 #this view is used for under review
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_under_review_view(request):
@@ -1738,11 +1868,7 @@ def insurance_under_review_view(request):
     }
     return render(request,'hospital/insurance_under_review.html',context=mydict)
 
-
-
-
 #this view is used for validate requests
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_validate_requests_view(request):
@@ -1751,15 +1877,12 @@ def insurance_validate_requests_view(request):
     }
     return render(request,'hospital/insurance_validate_requests.html',context=mydict)
 
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_view_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True,assignedInsuranceId=request.user.id)
     insurance=models.Insurance.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/insurance_view_patient.html',{'patients':patients,'insurance':insurance})
-
-
 
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
@@ -1768,15 +1891,11 @@ def insurance_view_discharge_patient_view(request):
     insurance=models.Insurance.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/insurance_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'insurance':insurance})
 
-
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_appointment_view(request):
     insurance=models.Insurance.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/insurance_appointment.html',{'insurance':insurance})
-
-
 
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
@@ -1790,8 +1909,6 @@ def insurance_view_appointment_view(request):
     appointments=zip(appointments,patients)
     return render(request,'hospital/insurance_view_appointment.html',{'appointments':appointments,'insurance':insurance})
 
-
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_delete_appointment_view(request):
@@ -1803,8 +1920,6 @@ def insurance_delete_appointment_view(request):
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
     appointments=zip(appointments,patients)
     return render(request,'hospital/insurance_delete_appointment.html',{'appointments':appointments,'insurance':insurance})
-
-
 
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
@@ -1819,7 +1934,6 @@ def delete_appointment_view(request,pk):
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
     appointments=zip(appointments,patients)
     return render(request,'hospital/insurance_delete_appointment.html',{'appointments':appointments,'insurance':insurance})
-
 
 #---------------------------------------------------------------------------------
 #------------------------ ABOUT US AND CONTACT US VIEWS START ------------------------------
