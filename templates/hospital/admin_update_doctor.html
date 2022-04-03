@@ -47,6 +47,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <br><br>
+<!------ update page for doctor by admin(sumit)  ---------->
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="container register-form">
@@ -64,7 +65,7 @@
               {% render_field userForm.username class="form-control" placeholder="Username" %}
             </div>
             <div class="form-group">
-              {% render_field doctorForm.mobile class="form-control" placeholder="Mobile" %}
+              {% render_field doctorForm.mobile class="form-control" placeholder="Contact" %}
             </div>
             <div class="form-group">
               {% render_field doctorForm.department class="form-control" placeholder="Department" %}
@@ -90,5 +91,6 @@
     </div>
   </div>
 </form>
+
 
 {% endblock content %}
