@@ -21,11 +21,6 @@
     }
   </style>
 </head>
-<!--
-written By : sumit kumar
-facebook : fb.com/sumit.luv
--->
-
 
 <div class="container">
 
@@ -48,6 +43,9 @@ facebook : fb.com/sumit.luv
           <th>Symptoms</th>
           <th>Mobile</th>
           <th>Address</th>
+            <th>Medical History</th>
+            <th>Update</th>
+            <th>Diagnosis</th>
 
         </tr>
       </thead>
@@ -58,6 +56,9 @@ facebook : fb.com/sumit.luv
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
         <td>{{p.address}}</td>
+          <td>{{p.medicalHistory}}</td>
+      <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-update-patient' p.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
+     <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-create-diagnosis' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
       </tr>
       {% endfor %}
     </table>
@@ -69,10 +70,5 @@ facebook : fb.com/sumit.luv
 
 
 </div>
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
 
 {% endblock content %}

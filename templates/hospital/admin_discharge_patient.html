@@ -19,10 +19,7 @@
     }
   </style>
 </head>
-<!--
-written By : sumit kumar
-facebook : fb.com/sumit.luv
--->
+
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
@@ -33,7 +30,7 @@ facebook : fb.com/sumit.luv
         <tr>
           <th>Name</th>
           <th>Symptoms</th>
-          <th>Mobile</th>
+          <th>Contact</th>
           <th>Discharge</th>
         </tr>
       </thead>
@@ -42,7 +39,7 @@ facebook : fb.com/sumit.luv
         <td> {{p.get_name}}</td>
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
-        <td><a class="btn btn-primary btn-xs" href="{% url 'discharge-patient' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
+        <td><a class="btn btn-danger btn-xs" href="{% url 'discharge-patient' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
       </tr>
       {% endfor %}
     </table>
@@ -50,10 +47,6 @@ facebook : fb.com/sumit.luv
 
 
 </div>
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
+
 
 {% endblock content %}
