@@ -35,10 +35,11 @@
           <th>Symptoms</th>
           <th>Contact</th>
           <th>Address</th>
-            <th>Medical History</th>
+          <th>Insurance Provider</th>
+          <th>Insurance Policy Number</th>
           <th>Update</th>
           <th>Delete</th>
-
+          <th>Medical History</th>
         </tr>
       </thead>
       {% for p in patients %}
@@ -48,7 +49,9 @@
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
         <td>{{p.address}}</td>
-          <td>{{p.medicalHistory}}</td>
+        <td>{{p.patientInsuranceProvider}}</td>
+        <td>{{p.patientPolicyNumber}}</td>
+        <td>{{p.medicalHistory}}</td>
         <td><a class="btn btn-primary btn-xs" href="{% url 'update-patient' p.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
         <td><a class="btn btn-danger btn-xs" href="{% url 'delete-patient-from-hospital' p.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>

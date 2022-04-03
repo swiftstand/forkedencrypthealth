@@ -38,6 +38,7 @@ class InsuranceUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+
 class PatientForm(forms.ModelForm):
     #this is the extrafield for linking patient and their assigend doctor
     #this will show dropdown __str__ method doctor model is shown on html so override it
@@ -45,7 +46,7 @@ class PatientForm(forms.ModelForm):
     assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic']
+        fields=['address','mobile','status','symptoms','profile_pic', 'medicalHistory', 'patientInsuranceProvider','patientPolicyNumber']
 
 #for student related form
 class LabStaffUserForm(forms.ModelForm):
@@ -69,6 +70,7 @@ class PatientUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+
 class LabStaffForm(forms.ModelForm):
     class Meta:
         model=models.LabStaff
@@ -79,7 +81,6 @@ class LabTestRecordUserForm(forms.ModelForm):
     class Meta:
         model = models.Patient_LabTest_Records
         fields = ['patient','labtest','status']
-
 
 class LabTestsUserForm(forms.ModelForm):
     class Meta:
