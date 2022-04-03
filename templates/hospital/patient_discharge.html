@@ -140,8 +140,8 @@
           <tr>
             <td>
               Patient Name : {{patientName}}<br>
-              Patient Contact : {{mobile}}<br>
-              Patient Address : {{address}}<br>
+              Patient Mobile : {{mobile}}<br>
+              Patient Addres : {{address}}<br>
             </td>
 
             <td>
@@ -223,7 +223,7 @@
       <td></td>
 
       <td>
-        Total : {{total}}
+        Total Rupees : {{total}}
       </td>
     </tr>
 
@@ -238,9 +238,8 @@
 
 {%else%}
 <h5 style="text-align:center;">You Are Not Discharged By Hospital !</h5>
-<br><br>
-<h6 style="text-align:center;">You Can Download Invoice after getting discharged.</h6>
+<h5 style="text-align:center;">Your Treatment Is Going On !</h5><br><br>
+<h6 style="text-align:center;">When You Will Be Discahrged. You Can Download Invoice.</h6>
 {%endif%}
-
 <br><br><br><br><br><br><br><br>
 {% endblock content %}

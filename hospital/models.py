@@ -2,8 +2,6 @@ from hashlib import new
 from django.db import models
 from django.contrib.auth.models import User
 
-
-
 departments=[('Cardiologist','Cardiologist'),
 ('Dermatologists','Dermatologists'),
 ('Emergency Medicine Specialists','Emergency Medicine Specialists'),
@@ -12,15 +10,12 @@ departments=[('Cardiologist','Cardiologist'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
 
-
 company=[('Aetna','Aetna'),
 ('Cigna','Cigna'),
 ('Anthem','Anthem'),
 ('UHG','UHG'),
 ('Humana','Humana')
 ]
-
-
 
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
@@ -108,13 +103,3 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
-
-
-
-#
-# class InsuranceAgency(models.Model):
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders

@@ -20,7 +20,6 @@
     }
   </style>
 </head>
-
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
@@ -32,7 +31,7 @@
           <th>Name</th>
           <th>Profile Picture</th>
           <th>Symptoms</th>
-          <th>Contact</th>
+          <th>Mobile</th>
           <th>Address</th>
           <th>Approve</th>
           <th>Reject</th>
@@ -45,7 +44,7 @@
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
         <td>{{p.address}}</td>
-        <td><a class="btn btn-success btn-xs" href="{% url 'approve-patient' p.id  %}"><span class="glyphicon glyphicon-ok"></span></a></td>
+        <td><a class="btn btn-primary btn-xs" href="{% url 'approve-patient' p.id  %}"><span class="glyphicon glyphicon-ok"></span></a></td>
         <td><a class="btn btn-danger btn-xs" href="{% url 'reject-patient' p.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
       </tr>
       {% endfor %}
@@ -54,6 +53,5 @@
 
 
 </div>
-
 
 {% endblock content %}

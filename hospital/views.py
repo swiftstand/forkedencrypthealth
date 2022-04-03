@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from datetime import datetime,timedelta,date
 from django.conf import settings
+from django.db.models import Q
 
 # Create your views here.
 def home_view(request):
@@ -15,21 +16,18 @@ def home_view(request):
     return render(request,'hospital/index.html')
 
 
-#for showing signup/login button for admin(by sumit)
 def adminclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/adminclick.html')
 
 
-#for showing signup/login button for doctor(by sumit)
 def doctorclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/doctorclick.html')
 
 
-#for showing signup/login button for patient(by sumit)
 def patientclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
@@ -125,7 +123,6 @@ def insurance_signup_view(request):
 
 
 
-#-----------for checking user is doctor , patient or admin(by sumit)
 def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
 def is_doctor(user):
@@ -591,9 +588,6 @@ def reject_appointment_view(request,pk):
     appointment.delete()
     return redirect('admin-approve-appointment')
 
-
-
-
 #insurance admin views
 
 @login_required(login_url='adminlogin')
@@ -601,15 +595,11 @@ def reject_appointment_view(request,pk):
 def admin_insurance_view(request):
     return render(request,'hospital/admin_insurance.html')
 
-
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_insurance_view(request):
     insurance=models.Insurance.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_insurance.html',{'insurance':insurance})
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -619,8 +609,6 @@ def delete_insurance_from_hospital_view(request,pk):
     user.delete()
     insurance.delete()
     return redirect('admin-view-insurance')
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -761,6 +749,15 @@ def doctor_view_patient_view(request):
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
 
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def search_view(request):
+    doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
+    # whatever user write in search box we get in query
+    query = request.GET['query']
+    patients=models.Patient.objects.all().filter(status=True,assignedDoctorId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
+    return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
+
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -768,7 +765,6 @@ def doctor_view_discharge_patient_view(request):
     dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedDoctorName=request.user.first_name)
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
-
 
 
 @login_required(login_url='doctorlogin')
@@ -878,59 +874,6 @@ def patient_book_appointment_view(request):
 
             doctor=models.Doctor.objects.get(user_id=request.POST.get('doctorId'))
             
-            if doctor.department == 'Cardiologist':
-                if 'heart' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-
-            if doctor.department == 'Dermatologists':
-                if 'skin' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-            if doctor.department == 'Emergency Medicine Specialists':
-                if 'fever' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-            if doctor.department == 'Allergists/Immunologists':
-                if 'allergy' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-            if doctor.department == 'Anesthesiologists':
-                if 'surgery' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-            if doctor.department == 'Colon and Rectal Surgeons':
-                if 'cancer' in desc:
-                    pass
-                else:
-                    print('else')
-                    message="Please Choose Doctor According To Disease"
-                    return render(request,'hospital/patient_book_appointment.html',{'appointmentForm':appointmentForm,'patient':patient,'message':message})
-
-
-
-
-
             appointment=appointmentForm.save(commit=False)
             appointment.doctorId=request.POST.get('doctorId')
             appointment.patientId=request.user.id #----user can choose any patient but only their info will be stored
@@ -941,6 +884,22 @@ def patient_book_appointment_view(request):
         return HttpResponseRedirect('patient-view-appointment')
     return render(request,'hospital/patient_book_appointment.html',context=mydict)
 
+
+
+def patient_view_doctor_view(request):
+    doctors=models.Doctor.objects.all().filter(status=True)
+    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
+    return render(request,'hospital/patient_view_doctor.html',{'patient':patient,'doctors':doctors})
+
+
+
+def search_doctor_view(request):
+    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
+    
+    # whatever user write in search box we get in query
+    query = request.GET['query']
+    doctors=models.Doctor.objects.all().filter(status=True).filter(Q(department__icontains=query)| Q(user__first_name__icontains=query))
+    return render(request,'hospital/patient_view_doctor.html',{'patient':patient,'doctors':doctors})
 
 
 
@@ -1117,10 +1076,6 @@ def insurance_validate_requests_view(request):
     return render(request,'hospital/insurance_validate_requests.html',context=mydict)
 
 
-
-
-
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_view_patient_view(request):
@@ -1190,16 +1145,6 @@ def delete_appointment_view(request,pk):
     return render(request,'hospital/insurance_delete_appointment.html',{'appointments':appointments,'insurance':insurance})
 
 
-
-#---------------------------------------------------------------------------------
-#------------------------ INSURANCE RELATED VIEWS END ------------------------------
-#---------------------------------------------------------------------------------
-
-
-
-
-
-
 #---------------------------------------------------------------------------------
 #------------------------ ABOUT US AND CONTACT US VIEWS START ------------------------------
 #---------------------------------------------------------------------------------
@@ -1217,5 +1162,3 @@ def contactus_view(request):
             send_mail(str(name)+' || '+str(email),message,settings.EMAIL_HOST_USER, settings.EMAIL_RECEIVING_USER, fail_silently = False)
             return render(request, 'hospital/contactussuccess.html')
     return render(request, 'hospital/contactus.html', {'form':sub})
-
-
