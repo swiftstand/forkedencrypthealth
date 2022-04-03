@@ -25,6 +25,11 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','profile_pic']
 
 
+<<<<<<< HEAD
+
+#for teacher related form
+class PatientUserForm(forms.ModelForm):
+=======
 class DiagnosisForm(forms.ModelForm):
     class Meta:
         model=models.Diagnosis
@@ -32,6 +37,24 @@ class DiagnosisForm(forms.ModelForm):
 
 #for insurance related form (prem)
 class InsuranceUserForm(forms.ModelForm):
+>>>>>>> origin/dev
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+class PatientForm(forms.ModelForm):
+    #this is the extrafield for linking patient and their assigend doctor
+    #this will show dropdown __str__ method doctor model is shown on html so override it
+    #to_field_name this will fetch corresponding value  user_id present in Doctor model and return it
+    assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
+    class Meta:
+        model=models.Patient
+        fields=['address','mobile','status','symptoms','profile_pic']
+
+#for student related form
+class LabStaffUserForm(forms.ModelForm):
     class Meta:
         model=User
         fields=['first_name','last_name','username','password']
@@ -52,6 +75,23 @@ class PatientUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+class LabStaffForm(forms.ModelForm):
+    class Meta:
+        model=models.LabStaff
+        fields=['address','mobile','department','status','profile_pic']
+
+
+class LabTestRecordUserForm(forms.ModelForm):
+    class Meta:
+        model = models.Patient_LabTest_Records
+        fields = ['patient','labtest','status']
+
+
+class LabTestsUserForm(forms.ModelForm):
+    class Meta:
+        model = models.LabTests
+        fields = '__all__'
+
 class PatientForm(forms.ModelForm):
     #this is the extrafield for linking patient and their assigend doctor
     #this will show dropdown __str__ method doctor model is shown on html so override it
