@@ -1791,7 +1791,7 @@ def update_patient_patient_view(request,pk):
 
     userForm=forms.PatientUserForm(instance=user)
     patientForm=forms.PatientForm(request.FILES,instance=patient)
-    mydict={'userForm':userForm,'patientForm':patientForm}
+    mydict={'userForm':userForm,'patientForm':patientForm, 'patient': patient}
     if request.method=='POST':
         userForm=forms.PatientUserForm(request.POST,instance=user)
         patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
@@ -1804,7 +1804,8 @@ def update_patient_patient_view(request,pk):
             patient.assignedDoctorId=request.POST.get('assignedDoctorId')
             patient.save()
             return redirect('patient-dashboard')
-    return render(request,'hospital/admin_update_patient.html',context=mydict)
+    # return render(request,'hospital/admin_update_patient.html',context=mydict)
+    return render(request,'hospital/patient_update_patient.html',context=mydict)
 
 #------------------------ PATIENT RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
