@@ -1,0 +1,17 @@
+{
+   "extends":"@tsconfig/node14/tsconfig.json",
+   "compilerOptions": {
+       "target": "es5",
+       "module": "commonjs",
+       "experimentalDecorators": true,
+       "emitDecoratorMetadata": true,
+       "outDir": "./dist",
+       "moduleResolution": "node",
+       "declaration": true,
+       "sourceMap": true,
+       "alwaysStrict": true,
+   },
+   "include": [
+       "./src/"
+   ],
+}
