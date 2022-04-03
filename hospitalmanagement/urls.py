@@ -46,7 +46,6 @@ urlpatterns = [
     path('admin-approve-labstaff', views.admin_approve_labstaff_view,name='admin-approve-labstaff'),
     path('approve-labstaff/<int:pk>', views.approve_labstaff_view,name='approve-labstaff'),
     path('reject-labstaff/<int:pk>', views.reject_labstaff_view,name='reject-labstaff'),
-    path('admin-view-labstaff-specialisation',views.admin_view_labstaff_specialisation_view,name='admin-view-labstaff-specialisation'),
     path('admin-patient', views.admin_patient_view,name='admin-patient'),
     path('admin-view-patient', views.admin_view_patient_view,name='admin-view-patient'),
     path('delete-patient-from-hospital/<int:pk>', views.delete_patient_from_hospital_view,name='delete-patient-from-hospital'),
@@ -171,7 +170,6 @@ urlpatterns +=[
 
     #created for new,requests, and fund dispersal in insurance base section(prem)
     path('insurance-requests', views.insurance_requests_view,name='insurance-requests'),
-    path('insurance-new', views.insurance_new_view,name='insurance-new'),
     path('insurance-fund-dispersal', views.insurance_fund_dispersal_view,name='insurance-fund-dispersal'),
     path('insurance-new-requests', views.insurance_new_requests_view,name='insurance-new-requests'),
     path('insurance-under-review', views.insurance_under_review_view,name='insurance-under-review'),

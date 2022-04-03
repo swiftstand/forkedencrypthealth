@@ -538,12 +538,6 @@ def reject_labstaff_view(request,pk):
     labstaff.delete()
     return redirect('admin-approve-labstaff')
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_view_labstaff_specialisation_view(request):
-    labstaff=models.LabStaff.objects.all().filter(status=True)
-    return render(request,'hospital/admin_view_labstaff_specialisation.html',{'labstaff':labstaff})
-
 # ------ End ------ #
 
  #patient
@@ -869,7 +863,7 @@ def update_insurance_view(request,pk):
     user=models.User.objects.get(id=insurance.user_id)
 
     userForm=forms.InsuranceUserForm(instance=user)
-    InsuranceForm=forms.InsuranceForm(request.FILES,instance=insurance)
+    insuranceForm=forms.InsuranceForm(request.FILES,instance=insurance)
     mydict={'userForm':userForm,'insuranceForm':insuranceForm}
     if request.method=='POST':
         userForm=forms.InsuranceUserForm(request.POST,instance=user)
@@ -1727,19 +1721,6 @@ def insurance_requests_view(request):
     }
     return render(request,'hospital/insurance_requests.html',context=mydict)
 
-#this view is used for creating new records
-
-@login_required(login_url='insurancelogin')
-@user_passes_test(is_insurance)
-def insurance_new_view(request):
-    mydict={
-    'insurance':models.Insurance.objects.get(user_id=request.user.id), #for profile picture of insurance agent in sidebar
-    }
-    return render(request,'hospital/insurance_new.html',context=mydict)
-
-
-#this view is used for creating new records
-
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_fund_dispersal_view(request):
@@ -1748,25 +1729,17 @@ def insurance_fund_dispersal_view(request):
     }
     return render(request,'hospital/insurance_fund_dispersal.html',context=mydict)
 
-
-
-
 #this view is used for new requests
 
 @login_required(login_url='insurancelogin')
 @user_passes_test(is_insurance)
 def insurance_new_requests_view(request):
     mydict={
+    #for profile picture of insurance agent in sidebar
     'insurance':models.Insurance.objects.get(user_id=request.user.id),
     # 'patients':models.Insurance.objects.filter(status='new-requests'),
-
-
-     #for profile picture of insurance agent in sidebar
     }
     return render(request,'hospital/insurance_new_requests.html',context=mydict)
-
-
-
 
 #this view is used for under review
 
@@ -1777,8 +1750,6 @@ def insurance_under_review_view(request):
     'insurance':models.Insurance.objects.get(user_id=request.user.id), #for profile picture of insurance agent in sidebar
     }
     return render(request,'hospital/insurance_under_review.html',context=mydict)
-
-
 
 
 #this view is used for validate requests
