@@ -297,7 +297,6 @@ def admin_view_patient_view(request):
     return render(request,'hospital/admin_view_patient.html',{'patients':patients})
 
 
-
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def delete_patient_from_hospital_view(request,pk):
@@ -704,7 +703,8 @@ def patient_dashboard_view(request):
     'doctorDepartment':doctor.department,
     'admitDate':patient.admitDate,
     'InsuranceProvider':patient.patientInsuranceProvider,
-    'PolicyNumber':patient.patientPolicyNumber
+    'PolicyNumber':patient.patientPolicyNumber,
+    'patientId':patient.id
     }
     return render(request,'hospital/patient_dashboard.html',context=mydict)
 
@@ -851,7 +851,28 @@ def patient_insurance(request):
     appointments=models.Appointment.objects.all().filter(patientId=request.user.id)
     return render(request,'hospital/patient_insurance.html',{'appointments':appointments,'patient':patient})
 
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def update_patient_patient_view(request,pk):
+    patient=models.Patient.objects.get(id=pk)
+    user=models.User.objects.get(id=patient.user_id)
 
+    userForm=forms.PatientUserForm(instance=user)
+    patientForm=forms.PatientForm(request.FILES,instance=patient)
+    mydict={'userForm':userForm,'patientForm':patientForm}
+    if request.method=='POST':
+        userForm=forms.PatientUserForm(request.POST,instance=user)
+        patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+        if userForm.is_valid() and patientForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            patient=patientForm.save(commit=False)
+            patient.status=True
+            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+            patient.save()
+            return redirect('patient-dashboard')
+    return render(request,'hospital/admin_update_patient.html',context=mydict)
 
 #------------------------ PATIENT RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
