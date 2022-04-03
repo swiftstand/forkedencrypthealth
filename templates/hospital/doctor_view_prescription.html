@@ -33,7 +33,7 @@
   {% if patients %}
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Your Total Patient List</h6>
+      <h6 class="panel-title">Your Patient List</h6>
     </div>
     <table class="table table-hover" id="dev-table">
       <thead>
@@ -44,8 +44,8 @@
           <th>Mobile</th>
           <th>Address</th>
             <th>Medical History</th>
-            <th>Update</th>
-            <th>Diagnosis</th>
+            <th>Prescription</th>
+
 
         </tr>
       </thead>
@@ -57,8 +57,7 @@
         <td>{{p.mobile}}</td>
         <td>{{p.address}}</td>
           <td>{{p.medicalHistory}}</td>
-      <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-update-patient' p.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
-     <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-create-diagnosis' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
+      <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-create-prescription' p.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
       </tr>
       {% endfor %}
     </table>

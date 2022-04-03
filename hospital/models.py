@@ -10,6 +10,15 @@ departments=[('Cardiologist','Cardiologist'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
 
+lab_work_required=[('Complete Blood Count', 'Complete Blood Count'),
+          ('Basic Metabolic Panel', 'Basic Metabolic Panel'),
+          ('Comprehensive Metabolic Panel','Comprehensive Metabolic Panel'),
+          ('Lipid Panel', 'Lipid Panel'),
+          ('Thyroid Stimulating Hormone', 'Thyroid Stimulating Hormone'),
+          ('Hemoglobin', 'Hemoglobin'),
+          ('Urinalysis', 'Urinalysis'),
+          ('Cultures', 'Cultures')]
+
 company=[('Aetna','Aetna'),
 ('Cigna','Cigna'),
 ('Anthem','Anthem'),
@@ -24,6 +33,7 @@ class Doctor(models.Model):
     mobile = models.CharField(max_length=20,null=True)
     department= models.CharField(max_length=50,choices=departments,default='Cardiologist')
     status=models.BooleanField(default=False)
+
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -33,8 +43,6 @@ class Doctor(models.Model):
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
 
-
-
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/PatientProfilePic/',null=True,blank=True)
@@ -42,8 +50,10 @@ class Patient(models.Model):
     mobile = models.CharField(max_length=20,null=False)
     symptoms = models.CharField(max_length=100,null=False)
     assignedDoctorId = models.PositiveIntegerField(null=True)
+    medicalHistory = models.CharField(max_length=500, null=False)
     admitDate=models.DateField(auto_now=True)
     status=models.BooleanField(default=False)
+
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -52,7 +62,6 @@ class Patient(models.Model):
         return self.user.id
     def __str__(self):
         return self.user.first_name+" ("+self.symptoms+")"
-
 
 class Appointment(models.Model):
     patientId=models.PositiveIntegerField(null=True)
@@ -63,8 +72,27 @@ class Appointment(models.Model):
     description=models.TextField(max_length=500)
     status=models.BooleanField(default=False)
 
-#insurance agent
+class Prescription(models.Model):
+    patientId = models.PositiveIntegerField(null=True)
+    patientName = models.CharField(max_length=40, null=True)
+    medicineName = models.CharField(max_length=500,null=True)
+    description = models.CharField(max_length=500,null=True)
 
+class Diagnosis(models.Model):
+    assignedDoctorId = models.PositiveIntegerField(null=True)
+    # id=models.PositiveIntegerField(null=True)
+    first_name=models.CharField(max_length=40,null=True)
+    last_name=models.CharField(max_length=40,null=True)
+    address = models.CharField(max_length=40)
+    feedback = models.CharField(max_length=40)
+    mobile = models.CharField(max_length=20, null=True)
+    symptoms = models.CharField(max_length=100, null=True)
+    address = models.CharField(max_length=40)
+    # # labtests = models.CharField(max_length=50,choices=departments,default='Complete Blood Count')
+    # labtests = models.CharField(max_length=50)
+    lab_work_required = models.CharField(max_length=100)
+
+#insurance agent
 class Insurance(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/InsuranceProfilePic/',null=True,blank=True)
@@ -83,8 +111,6 @@ class Insurance(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.company)
-
-
 
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True)

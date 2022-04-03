@@ -25,6 +25,11 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','profile_pic']
 
 
+class DiagnosisForm(forms.ModelForm):
+    class Meta:
+        model=models.Diagnosis
+        fields=['first_name', 'last_name','mobile','feedback', 'symptoms', 'address', 'lab_work_required']
+
 #for insurance related form (prem)
 class InsuranceUserForm(forms.ModelForm):
     class Meta:
@@ -33,13 +38,11 @@ class InsuranceUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+
 class InsuranceForm(forms.ModelForm):
     class Meta:
         model=models.Insurance
         fields=['address','mobile','company','status','profile_pic']
-
-
-
 
 #for patient related form
 class PatientUserForm(forms.ModelForm):
@@ -56,9 +59,7 @@ class PatientForm(forms.ModelForm):
     assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic']
-
-
+        fields=['address','mobile','status','symptoms','profile_pic', 'medicalHistory']
 
 class AppointmentForm(forms.ModelForm):
     doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
@@ -67,13 +68,11 @@ class AppointmentForm(forms.ModelForm):
         model=models.Appointment
         fields=['description','status']
 
-
 class PatientAppointmentForm(forms.ModelForm):
     doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Appointment
         fields=['description','status']
-
 
 #for contact us page
 class ContactusForm(forms.Form):
