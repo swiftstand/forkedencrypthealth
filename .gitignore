@@ -1,4 +1,8 @@
-# Django migrations
+# typescript things
+node_modules/
+dist/
+
+# # Django migrations
 migrations/
 
 # Vscode

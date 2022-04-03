@@ -2,8 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 
-
-
 #for admin signup
 class AdminSigupForm(forms.ModelForm):
     class Meta:
@@ -13,8 +11,7 @@ class AdminSigupForm(forms.ModelForm):
         'password': forms.PasswordInput()
         }
 
-
-#for student related form
+#for doctor related form
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -28,8 +25,23 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','profile_pic']
 
 
+#for insurance related form (prem)
+class InsuranceUserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+class InsuranceForm(forms.ModelForm):
+    class Meta:
+        model=models.Insurance
+        fields=['address','mobile','company','status','profile_pic']
 
-#for teacher related form
+
+
+
+#for patient related form
 class PatientUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -68,9 +80,3 @@ class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
-
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders

@@ -1,3 +1,4 @@
+from hashlib import new
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -8,6 +9,14 @@ departments=[('Cardiologist','Cardiologist'),
 ('Anesthesiologists','Anesthesiologists'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
+
+company=[('Aetna','Aetna'),
+('Cigna','Cigna'),
+('Anthem','Anthem'),
+('UHG','UHG'),
+('Humana','Humana')
+]
+
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/DoctorProfilePic/',null=True,blank=True)
@@ -53,6 +62,27 @@ class Appointment(models.Model):
     appointmentDate=models.DateField(auto_now=True)
     description=models.TextField(max_length=500)
     status=models.BooleanField(default=False)
+
+#insurance agent
+
+class Insurance(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    profile_pic= models.ImageField(upload_to='profile_pic/InsuranceProfilePic/',null=True,blank=True)
+    address = models.CharField(max_length=40)
+    mobile = models.CharField(max_length=20,null=True)
+    company= models.CharField(max_length=50,choices=company,default='Aetna')
+    #change
+    #status=models.CharField(default='new_requests',max_length=100)
+    status=models.BooleanField(default=False)
+
+    @property
+    def get_name(self):
+        return self.user.first_name+" "+self.user.last_name
+    @property
+    def get_id(self):
+        return self.user.id
+    def __str__(self):
+        return "{} ({})".format(self.user.first_name,self.company)
 
 
 
