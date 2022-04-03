@@ -1,4 +1,3 @@
-from hashlib import new
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -64,7 +63,6 @@ class Patient(models.Model):
     def __str__(self):
         return self.user.first_name+" ("+self.symptoms+")"
 
-
 class Appointment(models.Model):
     patientId=models.PositiveIntegerField(null=True)
     doctorId=models.PositiveIntegerField(null=True)
@@ -73,7 +71,6 @@ class Appointment(models.Model):
     appointmentDate=models.DateField(auto_now=True)
     description=models.TextField(max_length=500)
     status=models.BooleanField(default=False)
-
 
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True)
@@ -145,15 +142,6 @@ class Patient_LabTest_Records(models.Model):
     def __str__(self):
         return self.patient.name
 
-class Appointment(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
-    doctorId=models.PositiveIntegerField(null=True)
-    patientName=models.CharField(max_length=40,null=True)
-    doctorName=models.CharField(max_length=40,null=True)
-    appointmentDate=models.DateField(auto_now=True)
-    description=models.TextField(max_length=500)
-    status=models.BooleanField(default=False)
-
 class Prescription(models.Model):
     patientId = models.PositiveIntegerField(null=True)
     patientName = models.CharField(max_length=40, null=True)
@@ -193,21 +181,3 @@ class Insurance(models.Model):
         return self.user.id
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.company)
-
-class PatientDischargeDetails(models.Model):
-    patientId=models.PositiveIntegerField(null=True)
-    patientName=models.CharField(max_length=40)
-    assignedDoctorName=models.CharField(max_length=40)
-    address = models.CharField(max_length=40)
-    mobile = models.CharField(max_length=20,null=True)
-    symptoms = models.CharField(max_length=100,null=True)
-
-    admitDate=models.DateField(null=False)
-    releaseDate=models.DateField(null=False)
-    daySpent=models.PositiveIntegerField(null=False)
-
-    roomCharge=models.PositiveIntegerField(null=False)
-    medicineCost=models.PositiveIntegerField(null=False)
-    doctorFee=models.PositiveIntegerField(null=False)
-    OtherCharge=models.PositiveIntegerField(null=False)
-    total=models.PositiveIntegerField(null=False)
