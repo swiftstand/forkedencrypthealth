@@ -3,3 +3,4 @@ xhtml2pdf==0.2.6
 django-widget-tweaks==1.4.12
 sqlparse==0.4.2
 requests==2.27.1
+pyotp==2.6.0
