@@ -318,6 +318,11 @@ def admin_doctor_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
+def admin_hospitalstaff_view(request):
+    return render(request,'hospital/admin_hospitalstaff.html')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     print(f'I am the length of admin view doctor {len(doctors)}')
