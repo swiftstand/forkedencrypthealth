@@ -100,6 +100,10 @@ class PatientAppointmentForm(forms.ModelForm):
         model=models.Appointment
         fields=['description','status']
 
+class PatientPaymentForm(forms.Form):
+    paymentAmount = forms.IntegerField(min_value=0, label="Payment Amount")
+    remainingAmount = forms.IntegerField(disabled=True, label="Remaining Amount", required=False)
+
 #for contact us page
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)

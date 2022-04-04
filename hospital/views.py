@@ -138,6 +138,7 @@ def patient_signup_view(request):
                 patient=patientForm.save(commit=False)
                 patient.user=user
                 patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+                patient.isDischarged=False
                 patient=patient.save()
                 my_patient_group = Group.objects.get_or_create(name='PATIENT')
                 my_patient_group[0].user_set.add(user)
@@ -672,6 +673,7 @@ def admin_add_patient_view(request):
                 patient.user=user
                 patient.status=True
                 patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+                patient.isDischarged=False
                 patient.save()
 
                 my_patient_group = Group.objects.get_or_create(name='PATIENT')
@@ -730,7 +732,7 @@ def reject_patient_view(request,pk):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_discharge_patient_view(request):
-    patients=models.Patient.objects.all().filter(status=True)
+    patients=models.Patient.objects.all().filter(status=True, isDischarged=False)
     return render(request,'hospital/admin_discharge_patient.html',{'patients':patients})
 
 @login_required(login_url='adminlogin')
@@ -780,7 +782,12 @@ def discharge_patient_view(request,pk):
         pDD.doctorFee=int(request.POST['doctorFee'])
         pDD.OtherCharge=int(request.POST['OtherCharge'])
         pDD.total=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
+        pDD.remaining=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
         pDD.save()
+        
+        # Discharge the patient
+        patient.isDischarged = True
+        patient.save()
         return render(request,'hospital/patient_final_bill.html',context=patientDict)
     return render(request,'hospital/patient_generate_bill.html',context=patientDict)
 
@@ -803,23 +810,25 @@ def render_to_pdf(template_src, context_dict):
     return
 
 def download_pdf_view(request,pk):
-    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
+    dischargeDetails=models.PatientDischargeDetails.objects.get(patientId=pk).order_by('-id')[:1]
     dict={
-        'patientName':dischargeDetails[0].patientName,
-        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
-        'address':dischargeDetails[0].address,
-        'mobile':dischargeDetails[0].mobile,
-        'symptoms':dischargeDetails[0].symptoms,
-        'patientInsuranceProvider':dischargeDetails[0].patientInsuranceProvider,
-        'patientPolicyNumber':dischargeDetails[0].patientPolicyNumber,
-        'admitDate':dischargeDetails[0].admitDate,
-        'releaseDate':dischargeDetails[0].releaseDate,
-        'daySpent':dischargeDetails[0].daySpent,
-        'medicineCost':dischargeDetails[0].medicineCost,
-        'roomCharge':dischargeDetails[0].roomCharge,
-        'doctorFee':dischargeDetails[0].doctorFee,
-        'OtherCharge':dischargeDetails[0].OtherCharge,
-        'total':dischargeDetails[0].total,
+        'patientName':dischargeDetails.patientName,
+        'assignedDoctorName':dischargeDetails.assignedDoctorName,
+        'address':dischargeDetails.address,
+        'mobile':dischargeDetails.mobile,
+        'symptoms':dischargeDetails.symptoms,
+        'patientInsuranceProvider':dischargeDetails.patientInsuranceProvider,
+        'patientPolicyNumber':dischargeDetails.patientPolicyNumber,
+        'admitDate':dischargeDetails.admitDate,
+        'releaseDate':dischargeDetails.releaseDate,
+        'daySpent':dischargeDetails.daySpent,
+        'medicineCost':dischargeDetails.medicineCost,
+        'roomCharge':dischargeDetails.roomCharge,
+        'doctorFee':dischargeDetails.doctorFee,
+        'OtherCharge':dischargeDetails.OtherCharge,
+        'total':dischargeDetails.total,
+        'paid':dischargeDetails.total - dischargeDetails.remaining,
+        'remaining':dischargeDetails.remaining,
     }
     return render_to_pdf('hospital/download_bill.html',dict)
 
@@ -879,6 +888,9 @@ def approve_appointment_view(request,pk):
         appointment=models.Appointment.objects.get(id=pk)
         appointment.status=True
         appointment.save()
+        patient = models.Patient.objects.get(user__id=appointment.patientId)
+        patient.isDischarged = False
+        patient.save()
         return redirect(reverse('admin-approve-appointment'))
     except Exception as e:
         logging.error("error in admin-approve-appointment,error is {}".format) 
@@ -1648,6 +1660,41 @@ def patient_appointment_view(request):
 
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
+def patient_payment_view(request):
+    print('BEGIN OF PATIENT PAYMENT VIEW')
+    patient = models.Patient.objects.get(user_id=request.user.id)
+
+    # If this patient has been discharged then get the detail and set the form
+    try:
+        discharge_detail = models.PatientDischargeDetails.objects.get(patientId=patient.id)
+    except models.PatientDischargeDetails.DoesNotExist:
+        context = {'patient': patient, 'is_discharged': False}
+    else:
+        payment_form = forms.PatientPaymentForm(
+            initial={'remainingAmount': discharge_detail.remaining},
+        )
+        context = {'form': payment_form, 'patient': patient, 'is_discharged': True}
+
+    if request.method=='POST':
+        payment_form = forms.PatientPaymentForm(request.POST)
+        if payment_form.is_valid():
+            payment_amount = int(payment_form['paymentAmount'].value())
+
+            print(f'I am the amount to be paid {payment_amount}')
+            if payment_amount >= discharge_detail.remaining:
+                discharge_detail.delete()
+            else:
+                discharge_detail.remaining -= payment_amount
+                discharge_detail.save()
+            print('END OF PATIENT PAYMENT VIEW FORM IS VALID')
+            payment_form.initial = {'remainingAmount': discharge_detail.remaining}
+            # return render(request, 'hospital/patient_make_payment.html', context=context)
+            return HttpResponseRedirect('patient-payment')
+    print('END OF PATIENT PAYMENT VIEW')
+    return render(request, 'hospital/patient_make_payment.html', context=context)
+
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
 def patient_book_appointment_view(request):
     appointmentForm=forms.PatientAppointmentForm()
     patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
@@ -1711,9 +1758,6 @@ def patient_book_appointment_view(request):
 
             appointment=appointmentForm.save(commit=False)
             appointment.doctorId=request.POST.get('doctorId')
-            print('IN THE PATIENT BOOK APPOINTMENT VIEW')
-            print(f'I am the patient id {request.user.id}')
-            print('OUT THE PATIENT BOOK APPOINTMENT VIEW')
             appointment.patientId=request.user.id #----user can choose any patient but only their info will be stored
             appointment.doctorName=models.User.objects.get(id=request.POST.get('doctorId')).first_name
             appointment.patientName=request.user.first_name #----user can choose any patient but only their info will be stored
@@ -1745,34 +1789,37 @@ def patient_view_appointment_view(request):
 @user_passes_test(is_patient)
 def patient_discharge_view(request):
     patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
-    dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=patient.id).order_by('-id')[:1]
     patientDict=None
-    if dischargeDetails:
+    # Try to get the patient discharged details for our user
+    try:
+        dischargeDetails=models.PatientDischargeDetails.objects.get(patientId=patient.id)
+    except models.PatientDischargeDetails.DoesNotExist:
+        patientDict={
+            'is_discharged':False,
+            'patient':patient,
+        }
+    else:
         patientDict ={
         'is_discharged':True,
         'patient':patient,
         'patientId':patient.id,
         'patientName':patient.get_name,
-        'assignedDoctorName':dischargeDetails[0].assignedDoctorName,
+        'assignedDoctorName':dischargeDetails.assignedDoctorName,
         'address':patient.address,
         'mobile':patient.mobile,
         'symptoms':patient.symptoms,
         'admitDate':patient.admitDate,
-        'releaseDate':dischargeDetails[0].releaseDate,
-        'daySpent':dischargeDetails[0].daySpent,
-        'medicineCost':dischargeDetails[0].medicineCost,
-        'roomCharge':dischargeDetails[0].roomCharge,
-        'doctorFee':dischargeDetails[0].doctorFee,
-        'OtherCharge':dischargeDetails[0].OtherCharge,
-        'total':dischargeDetails[0].total,
+        'releaseDate':dischargeDetails.releaseDate,
+        'daySpent':dischargeDetails.daySpent,
+        'medicineCost':dischargeDetails.medicineCost,
+        'roomCharge':dischargeDetails.roomCharge,
+        'doctorFee':dischargeDetails.doctorFee,
+        'OtherCharge':dischargeDetails.OtherCharge,
+        'total':dischargeDetails.total,
+        'paid':dischargeDetails.total - dischargeDetails.remaining,
+        'remaining': dischargeDetails.remaining,
         }
         print(patientDict)
-    else:
-        patientDict={
-            'is_discharged':False,
-            'patient':patient,
-            'patientId':request.user.id,
-        }
     return render(request,'hospital/patient_discharge.html',context=patientDict)
 
 
@@ -1791,7 +1838,7 @@ def update_patient_patient_view(request,pk):
 
     userForm=forms.PatientUserForm(instance=user)
     patientForm=forms.PatientForm(request.FILES,instance=patient)
-    mydict={'userForm':userForm,'patientForm':patientForm}
+    mydict={'userForm':userForm,'patientForm':patientForm, 'patient': patient}
     if request.method=='POST':
         userForm=forms.PatientUserForm(request.POST,instance=user)
         patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
@@ -1804,7 +1851,8 @@ def update_patient_patient_view(request,pk):
             patient.assignedDoctorId=request.POST.get('assignedDoctorId')
             patient.save()
             return redirect('patient-dashboard')
-    return render(request,'hospital/admin_update_patient.html',context=mydict)
+    # return render(request,'hospital/admin_update_patient.html',context=mydict)
+    return render(request,'hospital/patient_update_patient.html',context=mydict)
 
 #------------------------ PATIENT RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
