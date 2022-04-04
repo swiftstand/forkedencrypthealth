@@ -75,7 +75,7 @@ urlpatterns = [
     path('update-hospitalstaff/<int:pk>', views.update_hospitalstaff_view,name='update-hospitalstaff'),
     path('admin-add-hospitalstaff', views.admin_add_hospitalstaff_view,name='admin-add-hospitalstaff'),
     path('admin-approve-hospitalstaff', views.admin_approve_hospitalstaff_view,name='admin-approve-hospitalstaff'),
-    path('approve-hospitalstaff/<int:pk>', views.admin_approve_hospitalstaff_view,name='approve-hospitalstaff'),
+    path('approve-hospitalstaff/<int:pk>', views.approve_hospitalstaff_view,name='approve-hospitalstaff'),
     path('reject-hospitalstaff/<int:pk>', views.reject_hospitalstaff_view,name='reject-hospitalstaff')
 ]
 

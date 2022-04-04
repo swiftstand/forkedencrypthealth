@@ -1,3 +1,7 @@
+{% extends 'hospital/hospitalstaff_base.html' %}
+{% load static %}
+{% block content %}
+{% include 'hospital/hospitalstaff_dashboard_cards.html' %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
@@ -236,9 +240,9 @@
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
-          <h3>{{doctorcount}}</h3>
-          <h4>Total Doctor</h4>
-          <p>Approval Required : {{pendingdoctorcount}}</p>
+          <h3>{{insurancestaffcount}}</h3>
+          <h4>Total Insurance Staff</h4>
+          <p>Approval Required : {{pendinginsurancestaffcount}}</p>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-user-md"></i>
@@ -249,9 +253,9 @@
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-2">
         <div class="col-md-8 market-update-left">
-          <h3>{{patientcount}}</h3>
-          <h4>Total Patient</h4>
-          <p>Wants to Admit : {{pendingpatientcount}}</p>
+          <h3>{{labstaffcount}}</h3>
+          <h4>Total Lab Staff</h4>
+          <p>Wants to Admit : {{pendinglabstaffcount}}</p>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-user-o"></i>
@@ -262,53 +266,15 @@
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-3">
         <div class="col-md-8 market-update-left">
-          <h3>{{appointmentcount}}</h3>
-          <h4>Total Appointment</h4>
-          <p>Approve Appointments :{{pendingappointmentcount}} </p>
+          <h3>{{hospitalstaffcount}}</h3>
+          <h4>Total HospitalStaff</h4>
+          <p>Wants to admit :{{pendinghospitalstaffcount}} </p>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-calendar"> </i>
         </div>
         <div class="clearfix"> </div>
       </div>
-      <div class="col-md-4 market-update-gd">
-        <div class="market-update-block clr-block-1">
-          <div class="col-md-8 market-update-left">
-            <h3>{{insurancestaffcount}}</h3>
-            <h4>Total Insurance Staff</h4>
-            <p>Approval Required : {{pendinginsurancestaffcount}}</p>
-          </div>
-          <div class="col-md-4 market-update-right">
-            <i class="fa fa-user-md"></i>
-          </div>
-          <div class="clearfix"> </div>
-        </div>
-      </div>
-      <div class="col-md-4 market-update-gd">
-        <div class="market-update-block clr-block-2">
-          <div class="col-md-8 market-update-left">
-            <h3>{{labstaffcount}}</h3>
-            <h4>Total Lab Staff</h4>
-            <p>Wants to Admit : {{pendinglabstaffcount}}</p>
-          </div>
-          <div class="col-md-4 market-update-right">
-            <i class="fa fa-user-o"></i>
-          </div>
-          <div class="clearfix"> </div>
-        </div>
-      </div>
-      <div class="col-md-4 market-update-gd">
-        <div class="market-update-block clr-block-3">
-          <div class="col-md-8 market-update-left">
-            <h3>{{hospitalstaffcount}}</h3>
-            <h4>Total HospitalStaff</h4>
-            <p>Wants to admit :{{pendinghospitalstaffcount}} </p>
-          </div>
-          <div class="col-md-4 market-update-right">
-            <i class="fa fa-calendar"> </i>
-          </div>
-          <div class="clearfix"> </div>
-        </div>
     </div>
     <div class="clearfix"> </div>
   </div>
@@ -316,3 +282,5 @@
 
 
 </html>
+
+{% endblock content %}

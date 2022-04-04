@@ -143,6 +143,9 @@ def is_insurance(user):
 
 #---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR , HOSPITALSTAFF, INSURANCESTAFF OR PATIENT
 def afterlogin_view(request):
+    print(f'I am after login')
+    print(f'I am the requrest user {request.user}')
+    print(f'I am the user groups {request.user.groups}')
     if is_admin(request.user):
         return redirect('admin-dashboard')
     elif is_doctor(request.user):
@@ -163,8 +166,6 @@ def afterlogin_view(request):
             return redirect('patient-dashboard')
         else:
             return render(request,'hospital/patient_wait_for_approval.html')
-
-
 
 
 #---------------------------------------------------------------------------------
@@ -221,6 +222,7 @@ def admin_hospitalstaff_view(request):
 @user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
+    print(f'I am the length of admin view doctor {len(doctors)}')
     return render(request,'hospital/admin_view_doctor.html',{'doctors':doctors})
 
 
@@ -286,8 +288,8 @@ def update_hospitalstaff_view(request,pk):
     mydict={'userForm':userForm,'hospitalstaffForm':hospitalstaffForm}
     if request.method=='POST':
         userForm=forms.HospitalStaffUserForm(request.POST,instance=user)
-        HospitalStaffForm=forms.HospitalStaffForm(request.POST,request.FILES,instance=hospitalstaff)
-        if userForm.is_valid() and hospitalstaffForm.is_valid():
+        hospitalStaffForm=forms.HospitalStaffForm(request.POST,request.FILES,instance=hospitalstaff)
+        if userForm.is_valid() and hospitalStaffForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
             user.save()
@@ -302,13 +304,17 @@ def update_hospitalstaff_view(request,pk):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_add_doctor_view(request):
+    print('BEGIN OF ADMIN ADD DOCTOR')
     userForm=forms.DoctorUserForm()
     doctorForm=forms.DoctorForm()
     mydict={'userForm':userForm,'doctorForm':doctorForm}
     if request.method=='POST':
         userForm=forms.DoctorUserForm(request.POST)
         doctorForm=forms.DoctorForm(request.POST, request.FILES)
+        print(f'The user form is valid {userForm.is_valid()}')
+        print(f'The doctor form is valid {doctorForm.is_valid()}')
         if userForm.is_valid() and doctorForm.is_valid():
+            print(f'The user and doctor form were valid!')
             user=userForm.save()
             user.set_password(user.password)
             user.save()
@@ -321,7 +327,9 @@ def admin_add_doctor_view(request):
             my_doctor_group = Group.objects.get_or_create(name='DOCTOR')
             my_doctor_group[0].user_set.add(user)
 
+        print('ENG OF ADMIN ADD DOCTOR')
         return HttpResponseRedirect('admin-view-doctor')
+    print('ENG OF ADMIN ADD DOCTOR')
     return render(request,'hospital/admin_add_doctor.html',context=mydict)
 
 
