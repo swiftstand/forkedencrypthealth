@@ -30,8 +30,21 @@ class DiagnosisForm(forms.ModelForm):
         model=models.Diagnosis
         fields=['first_name', 'last_name','mobile','feedback', 'symptoms', 'address', 'lab_work_required']
 
-#for insurance related form (prem)
-class InsuranceUserForm(forms.ModelForm):
+#for hospital staff related form
+class HospitalStaffUserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+class HospitalStaffForm(forms.ModelForm):
+    class Meta:
+        model=models.HospitalStaff
+        fields=['status']
+
+#for patient related form
+class PatientUserForm(forms.ModelForm):
     class Meta:
         model=User
         fields=['first_name','last_name','username','password']

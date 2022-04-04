@@ -29,3 +29,6 @@
 ## SSL certificates
 1. We need to generate SSL certificates to sign our connection
     a. This is a requirement to get an https:// address
+
+## Hospital Staff Discharge
+1. Make sure to update the PDD for when a hospital staff dicharges a patient.
