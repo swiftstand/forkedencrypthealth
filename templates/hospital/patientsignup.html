@@ -58,8 +58,6 @@
   <br>
   <br>
 
-
-
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="container register-form">
@@ -106,6 +104,9 @@
               <div class="form-group">
                 {% render_field patientForm.assignedDoctorId class="form-control" placeholder="Doctor" %}
               </div>
+              <div class="form-group">
+                {% render_field patientForm.medicalHistory class="form-control" placeholder="Medical History" %}
+              </div>
 
             </div>
           </div>
@@ -116,9 +117,17 @@
     </div>
 
   </form>
+  {% for message in messages %}
+  <center><div class="alert alert-dismissible" role="alert" style="background-color: crimson; width: 500px; font-weight: bold; text-align: center">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{ message }}
+  </div>
+</center>
+{% endfor %}
 
-  {% include "hospital/footer.html" %}
+{% include "hospital/footer.html" %}
 </body>
-
 
 </html>

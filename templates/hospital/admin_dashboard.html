@@ -95,6 +95,38 @@
         {% endfor %}
       </table>
     </div>
+
+    <!--THIS IS FOR INSURANCE-->
+    <div class="panel panel-primary col-md-5" style="margin-left:2%;">
+      <div class="panel-heading" style="text-align:center;">
+        <h6 class="panel-title">Insurance Agents</h6>
+      </div>
+      <table class="table table-hover table-striped" id="dev-table">
+        <thead class="thead-dark">
+          <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Status</th>
+
+          </tr>
+        </thead>
+        {% for d in insurance %}
+        <tr>
+          <td> {{d.get_name}}</td>
+          <td>{{d.company}}</td>
+          <td>{{d.mobile}}</td>
+          {%if d.status%}
+          <td> <span class="label label-primary">Permanent</span></td>
+          {% else %}
+          <td> <span class="label label-success">On Hold</span></td>
+          {% endif %}
+
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="panel panel-primary col-md-4" style="margin-left:2%;"> <div class="panel-heading" style="text-align:center;"> <h6 class="panel-title">Recent LabStaff</h6> </div> <table class="table table-hover" id="dev-table"> <thead> <tr> <th>Name</th> <th>Department</th> <th>Mobile</th> <th>Status</th> </tr> </thead> {% for l in labstaff %} <tr> <td> {{l.get_name}}</td> <td>{{l.department}}</td> <td>{{l.mobile}}</td> {%if l.status%} <td> <span class="label label-primary">Permanent</span></td> {% else %} <td> <span class="label label-success">On Hold</span></td> {% endif %} </tr> {% endfor %} </table> </div>  
   </div>
 </div>
 

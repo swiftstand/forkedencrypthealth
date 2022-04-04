@@ -23,6 +23,14 @@
 </head>
 
 <div class="container">
+
+    <form  action="/search" method="get" style="margin-left:70%;" class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" name="query" id="query" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+ 
+
+  {% if patients %}
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h6 class="panel-title">Your Total Patient List</h6>
@@ -33,8 +41,11 @@
           <th>Name</th>
           <th>Profile Picture</th>
           <th>Symptoms</th>
-          <th>Contact</th>
+          <th>Mobile</th>
           <th>Address</th>
+            <th>Medical History</th>
+            <th>Update</th>
+            <th>Diagnosis</th>
 
         </tr>
       </thead>
@@ -45,11 +56,19 @@
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
         <td>{{p.address}}</td>
+          <td>{{p.medicalHistory}}</td>
+      <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-update-patient' p.id  %}"><span class="glyphicon glyphicon-edit"></span></a></td>
+     <td><a class="btn btn-primary btn-xs" href="{% url 'doctor-create-diagnosis' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
       </tr>
       {% endfor %}
     </table>
   </div>
-</div>
+  {%else%}
+  <br><br><br>
+  <h4 style="text-align: center;color: red;">No Patient Found !!!</h4>
+  {% endif %}
 
+
+</div>
 
 {% endblock content %}
