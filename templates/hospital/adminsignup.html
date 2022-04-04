@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 
 {% load widget_tweaks %}
+
 <html lang="en" dir="ltr">
+
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>HMS - Django</title>
   <style type="text/css">
     body {
       color: #aa082e;
@@ -92,6 +95,16 @@
     </div>
 
   </form>
+  {% for message in messages %}
+  <center><div class="alert alert-dismissible" role="alert" style="background-color: crimson; width: 500px; font-weight: bold; text-align: center">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{ message }}
+  </div>
+</center>
+{% endfor %}
+
 
   {% include "hospital/footer.html" %}
 </body>
