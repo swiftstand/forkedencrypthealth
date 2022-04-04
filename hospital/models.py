@@ -41,7 +41,6 @@ class Doctor(models.Model):
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
 
-
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/PatientProfilePic/',null=True,blank=True)
@@ -54,6 +53,7 @@ class Patient(models.Model):
     patientInsuranceProvider = models.CharField(max_length=100,null=True)
     patientPolicyNumber=models.PositiveIntegerField(null=True)
     medicalHistory = models.CharField(max_length=500, null=False)
+    isDischarged = models.BooleanField(default=False)
     @property
     def get_name(self):
         return self.user.first_name+" "+self.user.last_name
@@ -91,7 +91,7 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
-
+    remaining=models.PositiveIntegerField(null=False)
 
 class LabStaff(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
