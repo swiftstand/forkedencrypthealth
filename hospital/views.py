@@ -866,6 +866,9 @@ def admin_add_appointment_view(request):
             appointment.patientName=models.User.objects.get(id=request.POST.get('patientId')).first_name
             appointment.status=True
             appointment.save()
+            patient = models.Patient.objects.get(user__id=appointment.patientId)
+            patient.isDischarged = False
+            patient.save()
         return HttpResponseRedirect('admin-view-appointment')
     return render(request,'hospital/admin_add_appointment.html',context=mydict)
 
@@ -1821,7 +1824,6 @@ def patient_discharge_view(request):
         }
         print(patientDict)
     return render(request,'hospital/patient_discharge.html',context=patientDict)
-
 
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
