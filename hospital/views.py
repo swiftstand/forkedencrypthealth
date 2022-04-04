@@ -599,6 +599,7 @@ def doctor_view_patient_view(request):
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_update_patient_view(request,pk):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
     patient = models.Patient.objects.get(id=pk)
     user = models.User.objects.get(id=patient.user_id)
 
@@ -618,7 +619,7 @@ def doctor_update_patient_view(request,pk):
             patient.assignedDoctorId = request.POST.get('assignedDoctorId')
             patient.save()
             return redirect('doctor-view-patient')
-    return render(request, 'hospital/doctor_update_patient.html', context=mydict)
+    return render(request, 'hospital/doctor_update_patient.html', context=mydict, )
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -756,8 +757,10 @@ def doctor_create_diagnosis_view(request, pk):
         'todayDate':date.today(),
         'assignedDoctorName':assignedDoctor[0].first_name,}
     if request.method=='POST':
+
         diagDict = {
-            'lab_work_required':(request.POST['lab_work_required']),
+
+            'lab_work_required':request.POST.get('lab_work_required', 'true'),
         }
         context.update(diagDict)
         pDR = models.Diagnosis()
@@ -767,7 +770,7 @@ def doctor_create_diagnosis_view(request, pk):
         pDR.address=patient.address
         pDR.mobile=patient.mobile
         pDR.symptoms=patient.symptoms
-        pDR.lab_work_required = request.POST['lab_work_required']
+        pDR.lab_work_required = request.POST.get('lab_work_required', 'true')
         pDR.save()
         return render(request, 'hospital/doctor_download_diagnosis.html',context=context)
     return render(request, 'hospital/doctor_create_diagnosis.html', context=context)
@@ -775,12 +778,14 @@ def doctor_create_diagnosis_view(request, pk):
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_create_prescription_view(request,pk):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
     patient=models.Patient.objects.get(id=pk)
     diagnosis=models.Diagnosis.objects
     prescription=models.Prescription.objects
     days=date.today()
     assignedDoctor=models.User.objects.all().filter(id=patient.assignedDoctorId)
     patientDict={
+        'doctor':doctor,
         'patientId':pk,
         'name':patient.get_name,
         'mobile':patient.mobile,
@@ -791,9 +796,10 @@ def doctor_create_prescription_view(request,pk):
     }
     if request.method=='POST':
         prescriptionDict = {
-            'medicineName': request.POST['medicineName'],
-            'description': request.POST['description'],
+            'medicineName': request.POST.get('medicineName', 'true'),
+            'description': request.POST.get('description', 'true'),
     }
+        patientDict.update(prescriptionDict)
         #for updating to database patientPrescriptionDetails (pPD)
         pPD=models.Diagnosis()
         pPD.patientId=pk
@@ -802,17 +808,15 @@ def doctor_create_prescription_view(request,pk):
         pPD.address=patient.address
         pPD.mobile=patient.mobile
         pPD.symptoms=patient.symptoms
-        pPD.lab_work_required = diagnosis.lab_work_required
-        pPD.medicineName = prescription.medicineName
-        pPD.description = prescription.description
+        pPD.medicineName = request.POST.get('medicineName', 'false')
+        pPD.description = request.POST.get('description', 'false')
         pPD.save()
-        return render(request,'hospital/doctor_create_prescription.html',context=patientDict)
+        return render(request,'hospital/doctor_final_prescription.html',context=patientDict)
 
     return render(request,'hospital/doctor_create_prescription.html',context=patientDict)
 
 
 def download_diagnosis_pdf_view(request,pk):
-    diagnosisDetails=models.Diagnosis.objects.all().filter(patientId=pk).order_by('-id')[:1]
     dischargeDetails = models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
     dict={
         'patientName':dischargeDetails[0].patientName,
@@ -820,7 +824,8 @@ def download_diagnosis_pdf_view(request,pk):
         'address':dischargeDetails[0].address,
         'mobile':dischargeDetails[0].mobile,
         'symptoms':dischargeDetails[0].symptoms,
-        'lab_work_required': (request.POST['lab_work_required']),
+        'lab_work_required': request.POST.get('lab_work_required', 'true'),
+        'todayDate': date.today(),
     }
     return render_to_pdf('hospital/download_diagnosis_report.html',dict)
 #---------------------------------------------------------------------------------
