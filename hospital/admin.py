@@ -6,6 +6,10 @@ class DoctorAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Doctor, DoctorAdmin)
 
+class HospitalStaffAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(HospitalStaff, HospitalStaffAdmin)
+
 class PatientAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Patient, PatientAdmin)
