@@ -1,4 +1,11 @@
-# Django migrations
+# IDE things
+.idea/
+
+# typescript things
+node_modules/
+dist/
+
+# # Django migrations
 migrations/
 
 # Vscode
@@ -133,3 +140,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+static
+static/profile_pic
