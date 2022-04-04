@@ -1,18 +1,3 @@
-"""hospitalmanagement URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
 from hospital import views
@@ -24,18 +9,25 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_view,name=''),
 
+
     path('aboutus', views.aboutus_view),
+    path('contactus', views.contactus_view),
+
 
     path('adminclick', views.adminclick_view),
     path('doctorclick', views.doctorclick_view),
+    path('hospitalstaffclick', views.hospitalstaffclick_view),
     path('patientclick', views.patientclick_view),
+    path('insuranceclick', views.insuranceclick_view),
 
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view,name='doctorsignup'),
+    path('hospitalstaffsignup', views.hospitalstaff_signup_view,name='hospitalstaffsignup'),
     path('patientsignup', views.patient_signup_view),
-    
+
     path('adminlogin', LoginView.as_view(template_name='hospital/adminlogin.html')),
     path('doctorlogin', LoginView.as_view(template_name='hospital/doctorlogin.html')),
+    path('hospitalstafflogin', LoginView.as_view(template_name='hospital/hospitalstafflogin.html')),
     path('patientlogin', LoginView.as_view(template_name='hospital/patientlogin.html')),
 
 
@@ -60,6 +52,7 @@ urlpatterns = [
     path('admin-view-patient', views.admin_view_patient_view,name='admin-view-patient'),
     path('delete-patient-from-hospital/<int:pk>', views.delete_patient_from_hospital_view,name='delete-patient-from-hospital'),
     path('update-patient/<int:pk>', views.update_patient_view,name='update-patient'),
+    path('update-patient-patient/<int:pk>', views.update_patient_patient_view,name='update-patient-patient'),
     path('admin-add-patient', views.admin_add_patient_view,name='admin-add-patient'),
     path('admin-approve-patient', views.admin_approve_patient_view,name='admin-approve-patient'),
     path('approve-patient/<int:pk>', views.approve_patient_view,name='approve-patient'),
@@ -75,13 +68,21 @@ urlpatterns = [
     path('admin-approve-appointment', views.admin_approve_appointment_view,name='admin-approve-appointment'),
     path('approve-appointment/<int:pk>', views.approve_appointment_view,name='approve-appointment'),
     path('reject-appointment/<int:pk>', views.reject_appointment_view,name='reject-appointment'),
+
+    path('admin-hospitalstaff', views.admin_hospitalstaff_view,name='admin-hospitalstaff'),
+    path('admin-view-hospitalstaff', views.admin_view_hospitalstaff_view,name='admin-view-hospitalstaff'),
+    path('delete-hospitalstaff-from-hospital/<int:pk>', views.delete_hospitalstaff_from_hospital_view,name='delete-hospitalstaff-from-hospital'),
+    path('update-hospitalstaff/<int:pk>', views.update_hospitalstaff_view,name='update-hospitalstaff'),
+    path('admin-add-hospitalstaff', views.admin_add_hospitalstaff_view,name='admin-add-hospitalstaff'),
+    path('admin-approve-hospitalstaff', views.admin_approve_hospitalstaff_view,name='admin-approve-hospitalstaff'),
+    path('approve-hospitalstaff/<int:pk>', views.admin_approve_hospitalstaff_view,name='approve-hospitalstaff'),
+    path('reject-hospitalstaff/<int:pk>', views.reject_hospitalstaff_view,name='reject-hospitalstaff')
 ]
 
 
 #---------FOR DOCTOR RELATED URLS-------------------------------------
 urlpatterns +=[
     path('doctor-dashboard', views.doctor_dashboard_view,name='doctor-dashboard'),
-    path('search', views.search_view,name='search'),
 
     path('doctor-patient', views.doctor_patient_view,name='doctor-patient'),
     path('doctor-view-patient', views.doctor_view_patient_view,name='doctor-view-patient'),
@@ -94,6 +95,33 @@ urlpatterns +=[
 ]
 
 
+#----------FOR HOSPITAL STAFF RELATED URLS---------------------------------
+urlpatterns +=[
+    path('hospitalstaff-dashboard', views.hospitalstaff_dashboard_view,name='hospitalstaff-dashboard'),
+
+    path('hospitalstaff-doctor', views.hospitalstaff_doctor_view,name='hospitalstaff-doctor'),
+    path('hospitalstaff-view-doctor', views.hospitalstaff_view_doctor_view,name='hospitalstaff-view-doctor'),
+    path('hospitalstaff-view-doctor-specialisation',views.hospitalstaff_view_doctor_specialisation_view,name='hospitalstaff-view-doctor-specialisation'),
+    path('hospitalstaff-patient', views.hospitalstaff_patient_view,name='hospitalstaff-patient'),
+    path('hospitalstaff-view-patient', views.hospitalstaff_view_patient_view,name='hospitalstaff-view-patient'),
+    path('update-patient/<int:pk>', views.update_patient_view,name='update-patient'),
+    path('update-patient-patient/<int:pk>', views.update_patient_patient_view,name='update-patient-patient'),
+    path('hospitalstaff-add-patient', views.hospitalstaff_add_patient_view,name='hospitalstaff-add-patient'),
+    path('hospitalstaff-approve-patient', views.hospitalstaff_approve_patient_view,name='hospitalstaff-approve-patient'),
+    path('approve-patient/<int:pk>', views.approve_patient_view,name='approve-patient'),
+    path('reject-patient/<int:pk>', views.reject_patient_view,name='reject-patient'),
+    path('hospitalstaff-discharge-patient', views.hospitalstaff_discharge_patient_view,name='hospitalstaff-discharge-patient'),
+    path('discharge-patient/<int:pk>', views.discharge_patient_view,name='discharge-patient'),
+    path('download-pdf/<int:pk>', views.download_pdf_view,name='download-pdf'),
+    path('hospitalstaff-appointment', views.hospitalstaff_appointment_view,name='hospitalstaff-appointment'),
+    path('hospitalstaff-view-appointment', views.hospitalstaff_view_appointment_view,name='hospitalstaff-view-appointment'),
+    path('hospitalstaff-add-appointment', views.hospitalstaff_add_appointment_view,name='hospitalstaff-add-appointment'),
+    path('hospitalstaff-approve-appointment', views.hospitalstaff_approve_appointment_view,name='hospitalstaff-approve-appointment'),
+    path('approve-appointment/<int:pk>', views.approve_appointment_view,name='approve-appointment'),
+    path('reject-appointment/<int:pk>', views.reject_appointment_view,name='reject-appointment'),
+]
+
+
 
 
 #---------FOR PATIENT RELATED URLS-------------------------------------
@@ -103,8 +131,6 @@ urlpatterns +=[
     path('patient-appointment', views.patient_appointment_view,name='patient-appointment'),
     path('patient-book-appointment', views.patient_book_appointment_view,name='patient-book-appointment'),
     path('patient-view-appointment', views.patient_view_appointment_view,name='patient-view-appointment'),
-    path('patient-view-doctor', views.patient_view_doctor_view,name='patient-view-doctor'),
-    path('searchdoctor', views.search_doctor_view,name='searchdoctor'),
     path('patient-discharge', views.patient_discharge_view,name='patient-discharge'),
-
+    path('patient-insurance', views.patient_insurance,name='patient-insurance'),
 ]
