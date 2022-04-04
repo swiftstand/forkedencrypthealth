@@ -14,7 +14,7 @@ class AdminSigupForm(forms.ModelForm):
         }
 
 
-#for student related form
+#for doctor related form
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -28,8 +28,23 @@ class DoctorForm(forms.ModelForm):
         fields=['address','mobile','department','status','profile_pic']
 
 
+#for hospital staff related form
+class HospitalStaffUserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+class HospitalStaffForm(forms.ModelForm):
+    class Meta:
+        model=models.HospitalStaff
+        fields=['status']
 
-#for teacher related form
+
+
+
+#for patient related form
 class PatientUserForm(forms.ModelForm):
     class Meta:
         model=User
@@ -44,8 +59,7 @@ class PatientForm(forms.ModelForm):
     assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic']
-
+        fields=['address','mobile','status','symptoms','profile_pic','patientInsuranceProvider','patientPolicyNumber']
 
 
 class AppointmentForm(forms.ModelForm):
@@ -68,9 +82,3 @@ class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
-
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders
