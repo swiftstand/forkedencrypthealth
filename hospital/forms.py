@@ -14,7 +14,7 @@ class AdminSigupForm(forms.ModelForm):
         }
 
 
-#for doctor related form
+
 class DoctorUserForm(forms.ModelForm):
     class Meta:
         model=User
