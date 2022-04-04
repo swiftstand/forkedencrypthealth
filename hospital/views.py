@@ -1084,7 +1084,7 @@ def doctor_update_patient_view(request,pk):
             patient.assignedDoctorId = request.POST.get('assignedDoctorId')
             patient.save()
             return redirect('doctor-view-patient')
-    return render(request, 'hospital/doctor_view_patient.html', context=mydict)
+    return render(request, 'hospital/doctor_update_patient.html', context=mydict)
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
