@@ -1,3 +1,6 @@
+# logs
+logs/
+
 # IDE things
 .idea/
 
@@ -5,7 +8,7 @@
 node_modules/
 dist/
 
-# # Django migrations
+# Django migrations
 migrations/
 
 # Vscode
@@ -140,6 +143,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-static
-static/profile_pic

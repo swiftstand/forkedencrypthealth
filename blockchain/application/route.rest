@@ -1,0 +1,94 @@
+GET http://localhost:10147/transactions
+
+###
+POST http://localhost:10147/transactions
+Content-Type: application/json
+
+{
+    "ID": "0000002",
+    "patientID": "patient1",
+    "amountPaid": "0",
+    "amountRemaining": "1000"
+}
+
+###
+GET http://localhost:10147/transactions/0000000
+
+###
+PATCH http://localhost:10147/transactions/0000001
+Content-Type: application/json
+
+{
+    "amountPaid": "300"
+}
+
+###
+GET http://localhost:10147/diagnosis
+
+###
+POST http://localhost:10147/diagnosis
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "patientID": "0000000",
+    "doctorID": "0000000",
+    "diagnosis": "Heart Attack",
+    "testsRequested": [
+        "Blood test",
+        "cholestorol test"
+    ],
+    "perscriptions": [
+        "Blood thinner",
+        "Heart medicine"
+    ]
+}
+
+###
+GET http://localhost:10147/diagnosis/0000000
+
+###
+PATCH http://localhost:10147/diagnosis/0000000
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "patientID": "0000000",
+    "doctorID": "0000000",
+    "diagnosis": "Heart Attack",
+    "testsRequested": [
+        "Blood test",
+        "cholestorol test",
+        "Open Bypass surgery"
+    ],
+    "perscriptions": [
+        "Blood thinner",
+        "Heart medicine"
+    ]
+}
+
+###
+GET http://localhost:10147/insurance/
+
+###
+POST http://localhost:10147/insurance/
+Content-Type: application/json
+
+{
+    "ID": "0000000",
+    "patientID": "patient0",
+    "policyNumber": "1234",
+    "requestedAmt": "1200",
+    "requestStatus": "new"
+}
+
+###
+GET http://localhost:10147/insurance/0000000
+
+###
+PATCH http://localhost:10147/insurance/0000000
+Content-Type: application/json
+
+{
+    "requestStatus": "approved"
+}
