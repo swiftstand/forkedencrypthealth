@@ -82,10 +82,19 @@
               {% render_field userForm.password class="form-control" placeholder="Password" %}
             </div>
             <div class="form-group">
-              {% render_field patientForm.mobile  class="form-control" placeholder="Mobile" %}
+              {% render_field patientForm.mobile  class="form-control" placeholder="Contact" %}
+            </div>
+            <div class="form-group">
+              {% render_field patientForm.patientInsuranceProvider  class="form-control" placeholder="Insurance Provider" %}
+            </div>
+            <div class="form-group">
+              {% render_field patientForm.patientPolicyNumber  class="form-control" placeholder="Policy Number" %}
             </div>
             <div class="form-group">
               {% render_field patientForm.assignedDoctorId class="form-control" placeholder="Doctor" %}
+            </div>
+            <div class="form-group">
+              {% render_field patientForm.medicalHistory class="form-control" placeholder="Medical History" %}
             </div>
           </div>
         </div>
@@ -95,4 +104,5 @@
   </div>
 
 </form>
+
 {% endblock content %}

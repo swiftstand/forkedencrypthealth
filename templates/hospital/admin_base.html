@@ -4,6 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <title>HMS - Django</title>
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -26,6 +27,9 @@
     a:hover {
       color: white;
     }
+
+
+
 
     /*---------------------------------------
        Social section
@@ -83,6 +87,10 @@
 
     }
 
+
+
+
+
     body {
 
       padding-left: 240px;
@@ -93,7 +101,7 @@
     }
 
     .menu {
-      background: #5bc995;
+      background: #03a9f4;
       height: 100vh;
       width: 240px;
       position: fixed;
@@ -138,6 +146,9 @@
     }
     .menu ul li.icon-customers {
       background-image: url("http://www.entypo.com/images//briefcase.svg");
+    }
+    .menu ul li.icon-users {
+      background-image: url("http://www.entypo.com/images//users.svg");
     }
     .menu ul li.icon-users {
       background-image: url("http://www.entypo.com/images//users.svg");
@@ -281,7 +292,12 @@
       <li tabindex="0" class="icon-dashboard"> <a style="color:white; text-decoration:none;" href="/admin-dashboard"><span>Dashboard</span></a> </li>
       <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/admin-doctor"><span>Doctor</span></a></li>
       <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-patient"><span>Patient</span></a></li>
+      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-hospitalstaff"><span>HospitalStaff</span></a></li>
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/admin-appointment"><span>Appointment</span></a></li>
+      <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/admin-labstaff"><span>LabStaff</span></a></li>
+      <!-- adding insurance agent in side bar-->
+      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-insurance"><span>Insurance Agent</span></a></li>
+
     </ul>
   </nav>
 
@@ -316,9 +332,7 @@
     <!-- content end-->
 
     <br><br><br><br>
-
   </main>
-
 </body>
 
 </html>

@@ -1,0 +1,225 @@
+{% extends 'hospital/doctor_base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+
+    <head>
+        <meta charset="utf-8">
+        <title>A simple, clean, and responsive HTML invoice template</title>
+
+        <style>
+            .diagnosis-box {
+                max-width: 800px;
+                margin: auto;
+                padding: 30px;
+                border: 1px solid #eee;
+                box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+                font-size: 16px;
+                line-height: 24px;
+                font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+                color: #555;
+            }
+
+
+            .diagnosis-box table {
+                width: 100%;
+                line-height: inherit;
+                text-align: left;
+            }
+
+            .diagnosis-box table td {
+                padding: 5px;
+                vertical-align: top;
+            }
+
+            .diagnosis-box table tr td:nth-child(2) {
+                text-align: right;
+            }
+
+            .diagnosis-box table tr.top table td {
+                padding-bottom: 20px;
+            }
+
+            .creatediagnosis {
+                margin-left: 40%;
+                color: #0072ff;
+            }
+
+            .diagnosis-box table tr.top table td.title {
+                font-size: 45px;
+                line-height: 45px;
+                color: #333;
+            }
+
+            .diagnosis-box table tr.information table td {
+                padding-bottom: 40px;
+            }
+
+            .diagnosis-box table tr.heading td {
+                background: #eee;
+                border-bottom: 1px solid #ddd;
+                font-weight: bold;
+            }
+
+            .diagnosis-box table tr.details td {
+                padding-bottom: 20px;
+            }
+
+            .diagnosis-box table tr.item td {
+                border-bottom: 1px solid #eee;
+            }
+
+            .diagnosis-box table tr.item.last td {
+                border-bottom: none;
+            }
+
+            .diagnosis-box table tr.total td:nth-child(2) {
+                border-top: 2px solid #eee;
+                font-weight: bold;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .diagnosis-box table tr.top table td {
+                    width: 100%;
+                    display: block;
+                    text-align: center;
+                }
+
+                .diagnosis-box table tr.information table td {
+                    width: 100%;
+                    display: block;
+                    text-align: center;
+                }
+            }
+
+            /** RTL **/
+            .rtl {
+                direction: rtl;
+                font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            }
+
+            .rtl table {
+                text-align: right;
+            }
+
+            .rtl table tr td:nth-child(2) {
+                text-align: left;
+            }
+
+            .menu {
+                top: 50px;
+            }
+        </style>
+
+
+    </head>
+
+
+    <br><br><br>
+{#    <button type="button" style="float: right;">Remove Diagnosis</button>#}
+    <br><br><br>
+    <div class="diagnosis-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <h1>Hospital Management</h1>
+                            </td>
+
+                            <td>
+                                Date: {{ todayDate }}<br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+
+                                Patient Name : {{ name }}<br>
+                                Patient Mobile : {{ mobile }}<br>
+                                Patient Address : {{ address }}<br>
+                            </td>
+
+                            <td>
+                                Doctor Name :{{ assignedDoctorName }}<br>
+
+
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td>
+                    Disease and Symptoms
+                </td>
+                <td>
+
+                </td>
+
+            </tr>
+
+            <tr class="details">
+                <td><input type="text" value=" {{ symptoms }}">
+
+                </td>
+            </tr>
+            <form method="post">
+                {% csrf_token %}
+
+                <tr class="heading">
+                    <td>
+
+                        Lab Recommendations
+
+                    </td>
+                    <td>
+
+                    </td>
+
+                </tr>
+
+
+                <tr class="details">
+                    <td>
+                        <select name="Select the Lab tests">
+                            <option value="Not Required">Not Required</option>
+                            <option value="Complete Blood Count">Complete Blood Count</option>
+                            <option value="Basic Metabolic Panel">Basic Metabolic Panel</option>
+                            <option value="Comprehensive Metabolic Panel">Comprehensive Metabolic Panel</option>
+                            <option value="Lipid Panel">Lipid Panel</option>
+                            <option value="Thyroid Stimulating Hormone">Thyroid Stimulating Hormone</option>
+                            <option value="Hemoglobin">Hemoglobin</option>
+                            <option value="Urinalysis">Urinalysis</option>
+                            <option value="Cultures">Cultures</option>
+
+                        </select>
+
+                    </td>
+
+
+                </tr>
+ <tr class="heading">
+                    <td>
+
+                        <button type="submit" name="submit" class="creatediagnosis">Create Diagnosis</button>
+
+                    </td>
+ </tr>
+            </form>
+        </table>
+    </div>
+    <br>
+    <br>
+
+
+
+{% endblock content %}

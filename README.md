@@ -2,4 +2,4 @@
 A hospital management app built with Django
 
 ## Dev Environment
-Set up a virtual environment with conda or venv with python version 3.10. Then install the requirements as follows `pip install -r requirements.txt`.
+Build an python 3.10 virtual environment using `conda`, `mamba`, or `venv`. Then run `pip install -r requirements.txt`.
