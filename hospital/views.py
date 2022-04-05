@@ -1,4 +1,5 @@
-import re
+import uuid
+import requests
 from django.shortcuts import render,redirect,reverse
 from django.contrib import messages
 from hospitalmanagement.settings import LOG_PATH
@@ -19,6 +20,8 @@ import os
 os.makedirs('logs', exist_ok=True)
 logFileName= os.path.join(LOG_PATH, str(datetime.now().strftime("%m_%d_%Y") + ".log"))
 logging.basicConfig(filename=logFileName,  format='%(asctime)s %(message)s', level=logging.ERROR)
+
+REST_API_PORT = os.getenv('REST_API_PORT')
 
 # Create your views here.
 def home_view(request):
@@ -2127,13 +2130,28 @@ def patient_payment_view(request):
     if request.method=='POST':
         payment_form = forms.PatientPaymentForm(request.POST)
         if payment_form.is_valid():
-            payment_amount = int(payment_form['paymentAmount'].value())
+            payment_amount_str = payment_form['paymentAmount'].value()
+            payment_amount = int(payment_amount_str)
 
             if payment_amount >= discharge_detail.remaining:
                 discharge_detail.delete()
             else:
                 discharge_detail.remaining -= payment_amount
                 discharge_detail.save()
+                print(f'I am discharge detail {discharge_detail}')
+                print(f'I am discharge detail remaining {discharge_detail.remaining}')
+                data = {
+                        "ID": str(uuid.uuid1()),
+                        "patientID": str(discharge_detail.patientId),
+                        "amountPaid": payment_amount_str,
+                        "amountRemaining": str(discharge_detail.remaining)
+                }
+                requests.post(
+                    f'http://localhost:{REST_API_PORT}/transactions',
+                    json=data
+                )
+                # print(f'I AM THE RESPONSE STATUS FROM BLOCKCHAIN {response.status_code}')
+                # print(f'I AM THE RESPONSE JSON FROM BLOCKCHAIN\n{response.json()}')
             payment_form.initial = {'remainingAmount': discharge_detail.remaining}
             # return render(request, 'hospital/patient_make_payment.html', context=context)
             return HttpResponseRedirect('patient-payment')
