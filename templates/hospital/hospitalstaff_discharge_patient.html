@@ -39,7 +39,7 @@
         <td> {{p.get_name}}</td>
         <td>{{p.symptoms}}</td>
         <td>{{p.mobile}}</td>
-        <td><a class="btn btn-danger btn-xs" href="{% url 'discharge-patient' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
+        <td><a class="btn btn-danger btn-xs" href="{% url 'hs-discharge-patient' p.id  %}"><span class="glyphicon glyphicon-log-out"></span></a></td>
       </tr>
       {% endfor %}
     </table>

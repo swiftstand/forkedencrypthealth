@@ -75,6 +75,14 @@ class InsuranceForm(forms.ModelForm):
         model=models.Insurance
         fields=['address','mobile','company','status','profile_pic']
 
+class InsuranceUserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+
 #for patient related form
 class PatientUserForm(forms.ModelForm):
     class Meta:
