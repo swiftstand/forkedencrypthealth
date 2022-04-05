@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+{% load static %}
 {% load widget_tweaks %}
 <html lang="en" dir="ltr">
 
@@ -57,9 +58,6 @@
   <br>
   <br>
 
-
-
-
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="container register-form">
@@ -67,6 +65,13 @@
         <div class="note">
           <p>Register In Hospital</p>
         </div>
+        <div class="note">
+          <p>You must download an authenticator app like Google authenticator or Authy.</p>
+        </div>
+        <div class="note">
+          <p>Then scan this QR code in the app</p>
+        </div>
+        <img src="{% static "images/OTP_QR_CODE.png" %}" alt="QR Code">
 
         <div class="form-content">
           <div class="row">

@@ -122,3 +122,7 @@ class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
+
+# For submitting a OTP
+class OneTimePasswordForm(forms.Form):
+    code = forms.CharField(max_length=6, min_length=6, required=True)

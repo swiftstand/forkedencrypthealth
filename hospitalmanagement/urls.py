@@ -33,6 +33,7 @@ urlpatterns = [
     path('insurancelogin', LoginView.as_view(template_name='hospital/insurancelogin.html')),
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
     path('logout', LogoutView.as_view(template_name='hospital/index.html'),name='logout'),
+    path('authentication', views.authentication_view, name='authentication-view'),
 
     path('admin-dashboard', views.admin_dashboard_view,name='admin-dashboard'),
     path('admin-doctor', views.admin_doctor_view,name='admin-doctor'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path('admin-approve-doctor', views.admin_approve_doctor_view,name='admin-approve-doctor'),
     path('approve-doctor/<int:pk>', views.approve_doctor_view,name='approve-doctor'),
     path('reject-doctor/<int:pk>', views.reject_doctor_view,name='reject-doctor'),
+    path('admin-view-doctor-specialisation',views.admin_view_doctor_specialisation_view,name='admin-view-doctor-specialisation'),
 
     path('admin-labstaff', views.admin_labstaff_view,name='admin-labstaff'),
     path('admin-view-labstaff', views.admin_view_labstaff_view,name='admin-view-labstaff'),
@@ -190,12 +192,12 @@ urlpatterns +=[
     path('hospitalstaff-view-doctor-specialisation',views.hospitalstaff_view_doctor_specialisation_view,name='hospitalstaff-view-doctor-specialisation'),
     path('hospitalstaff-patient', views.hospitalstaff_patient_view,name='hospitalstaff-patient'),
     path('hospitalstaff-view-patient', views.hospitalstaff_view_patient_view,name='hospitalstaff-view-patient'),
-    path('update-patient/<int:pk>', views.update_patient_view,name='update-patient'),
-    path('update-patient-patient/<int:pk>', views.update_patient_patient_view,name='update-patient-patient'),
+    # path('update-patient/<int:pk>', views.update_patient_view,name='update-patient'),
+    # path('update-patient-patient/<int:pk>', views.update_patient_patient_view,name='update-patient-patient'),
     path('hospitalstaff-add-patient', views.hospitalstaff_add_patient_view,name='hospitalstaff-add-patient'),
     path('hospitalstaff-approve-patient', views.hospitalstaff_approve_patient_view,name='hospitalstaff-approve-patient'),
-    path('approve-patient/<int:pk>', views.approve_patient_view,name='approve-patient'),
-    path('reject-patient/<int:pk>', views.reject_patient_view,name='reject-patient'),
+    path('hs-approve-patient/<int:pk>', views.hs_approve_patient_view,name='hs-approve-patient'),
+    path('hospitalstaff-reject-patient/<int:pk>', views.hospitalstaff_reject_patient_view,name='hospitalstaff-reject-patient'),
     path('hospitalstaff-discharge-patient', views.hospitalstaff_discharge_patient_view,name='hospitalstaff-discharge-patient'),
     path('discharge-patient/<int:pk>', views.discharge_patient_view,name='discharge-patient'),
     path('download-pdf/<int:pk>', views.download_pdf_view,name='download-pdf'),
@@ -203,8 +205,8 @@ urlpatterns +=[
     path('hospitalstaff-view-appointment', views.hospitalstaff_view_appointment_view,name='hospitalstaff-view-appointment'),
     path('hospitalstaff-add-appointment', views.hospitalstaff_add_appointment_view,name='hospitalstaff-add-appointment'),
     path('hospitalstaff-approve-appointment', views.hospitalstaff_approve_appointment_view,name='hospitalstaff-approve-appointment'),
-    path('approve-appointment/<int:pk>', views.approve_appointment_view,name='approve-appointment'),
-    path('reject-appointment/<int:pk>', views.reject_appointment_view,name='reject-appointment'),
+    path('hs-approve-appointment/<int:pk>', views.hs_approve_appointment_view,name='hs-approve-appointment'),
+    path('hs-reject-appointment/<int:pk>', views.hs_reject_appointment_view,name='hs-reject-appointment'),
 ]
 
 
