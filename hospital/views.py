@@ -237,14 +237,11 @@ def authentication_view(request):
     context = {'form': OTPForm}
     if request.method == 'POST':
         OTPForm = forms.OneTimePasswordForm(request.POST)
-        user = models.User.objects.get(id=request.user.id)
         if OTPForm.is_valid():
             entered_otp = OTPForm['code'].value()
             valid_otp = settings.OTP.now()
-            print(f'User entered OTP: {entered_otp}')
-            print(f'Valid otp is: {valid_otp}')
             if valid_otp == entered_otp:
-                print('The user has entered a valid OTP. Login in')
+                print('The user has entered a valid OTP. Logging in')
                 return HttpResponseRedirect('afterlogin')
             else:
                 print('The user has entered an incorrect OTP code.')
@@ -353,7 +350,6 @@ def admin_view_doctor_specialisation_view(request):
 @user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
-    print(f'I am the length of admin view doctor {len(doctors)}')
     return render(request,'hospital/admin_view_doctor.html',{'doctors':doctors})
 
 @login_required(login_url='adminlogin')
@@ -491,7 +487,6 @@ def admin_add_doctor_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_approve_doctor_view(request):
-    print('BEING ADMIN APPROVE DOCTOR VIEW')
     #those whose approval are needed
     doctors=models.Doctor.objects.all().filter(status=False)
     return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
@@ -773,7 +768,6 @@ def delete_patient_from_hospital_view(request,pk):
 @user_passes_test(is_admin)
 def update_patient_view(request,pk):
     try:
-        print('BEGIN OF UPDATE PATIENT VIEW')
         patient=models.Patient.objects.get(id=pk)
         user=models.User.objects.get(id=patient.user_id)
 
@@ -781,11 +775,8 @@ def update_patient_view(request,pk):
         patientForm=forms.PatientForm(request.FILES,instance=patient)
         mydict={'userForm':userForm,'patientForm':patientForm}
         if request.method=='POST':
-            print('I AM INSIDE THE POST REQUEST OF UPDATE PATIENT VIEW')
             userForm=forms.PatientUserForm(request.POST,instance=user)
             patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
-            print(f'The user form is valid {userForm.is_valid()}')
-            print(f'The patient form is valid {patientForm.is_valid()}')
             if userForm.is_valid() and patientForm.is_valid():
                 user=userForm.save()
                 user.set_password(user.password)
@@ -794,12 +785,10 @@ def update_patient_view(request,pk):
                 patient.status=True
                 patient.assignedDoctorId=request.POST.get('assignedDoctorId')
                 patient.save()
-                print('updated patient properly and saving db')
                 return redirect('admin-view-patient')
     except Exception as e: 
         logging.error("error in update patient view, error is {}".format(e))  
         return redirect('admin-view-patient')             
-    print('END OF UPDATE PATIENT VIEW')
     return render(request,'hospital/admin_update_patient.html',context=mydict)
 
 
@@ -2122,7 +2111,6 @@ def patient_appointment_view(request):
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
 def patient_payment_view(request):
-    print('BEGIN OF PATIENT PAYMENT VIEW')
     patient = models.Patient.objects.get(user_id=request.user.id)
 
     # If this patient has been discharged then get the detail and set the form
@@ -2141,17 +2129,14 @@ def patient_payment_view(request):
         if payment_form.is_valid():
             payment_amount = int(payment_form['paymentAmount'].value())
 
-            print(f'I am the amount to be paid {payment_amount}')
             if payment_amount >= discharge_detail.remaining:
                 discharge_detail.delete()
             else:
                 discharge_detail.remaining -= payment_amount
                 discharge_detail.save()
-            print('END OF PATIENT PAYMENT VIEW FORM IS VALID')
             payment_form.initial = {'remainingAmount': discharge_detail.remaining}
             # return render(request, 'hospital/patient_make_payment.html', context=context)
             return HttpResponseRedirect('patient-payment')
-    print('END OF PATIENT PAYMENT VIEW')
     return render(request, 'hospital/patient_make_payment.html', context=context)
 
 @login_required(login_url='patientlogin')
@@ -2164,7 +2149,6 @@ def patient_book_appointment_view(request):
     if request.method=='POST':
         appointmentForm=forms.PatientAppointmentForm(request.POST)
         if appointmentForm.is_valid():
-            print(request.POST.get('doctorId'))
             desc=request.POST.get('description')
 
             doctor=models.Doctor.objects.get(user_id=request.POST.get('doctorId'))
@@ -2280,7 +2264,6 @@ def patient_discharge_view(request):
         'paid':dischargeDetails.total - dischargeDetails.remaining,
         'remaining': dischargeDetails.remaining,
         }
-        print(patientDict)
     return render(request,'hospital/patient_discharge.html',context=patientDict)
 
 @login_required(login_url='patientlogin')
