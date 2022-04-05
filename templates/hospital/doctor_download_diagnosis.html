@@ -77,6 +77,10 @@
                 border-top: 2px solid #eee;
                 font-weight: bold;
             }
+            .download {
+      text-align: center;
+      display: block;
+    }
 
             @media only screen and (max-width: 600px) {
                 .diagnosis-box table tr.top table td {
@@ -159,7 +163,7 @@
 
             <tr class="heading">
                 <td>
-                    Medicine Prescribed
+                    Disease and Symptoms
                 </td>
                 <td>
 
@@ -168,7 +172,7 @@
             </tr>
 
             <tr class="details">
-                <td><input type="text" value=" {{ medicineName }}">
+                <td><input type="text" value=" {{ symptoms }}" disabled>
 
                 </td>
             </tr>
@@ -178,7 +182,7 @@
                 <tr class="heading">
                     <td>
 
-                        Description
+                        Lab Recommendations
 
                     </td>
                     <td>
@@ -188,22 +192,33 @@
                 </tr>
 
 
-               <tr class="details">
-                <td><input type="text" value=" {{ description }}">
+                <tr class="details">
+                    <td>
+                        <select name="Select the Lab tests" disabled>
+                            <option value="Not Required">Not Required</option>
+                            <option value="Complete Blood Count">Complete Blood Count</option>
+                            <option value="Basic Metabolic Panel">Basic Metabolic Panel</option>
+                            <option value="Comprehensive Metabolic Panel">Comprehensive Metabolic Panel</option>
+                            <option value="Lipid Panel">Lipid Panel</option>
+                            <option value="Thyroid Stimulating Hormone">Thyroid Stimulating Hormone</option>
+                            <option value="Hemoglobin">Hemoglobin</option>
+                            <option value="Urinalysis">Urinalysis</option>
+                            <option value="Cultures">Cultures</option>
 
-                </td>
-            </tr>
-<tr class="submit">
-    <td>
-<button type="submit" class="creatediagnosis">Create Prescription</button>
-                </td>
-</tr>
+                        </select>
+
+                    </td>
+                </tr>
+
+
             </form>
         </table>
     </div>
     <br>
     <br>
-
+  <div class="download">
+  <a style="background:red; width:500px;" href="{% url 'download-diagnosis-pdf' patientId  %}">Download</a>
+</div>
 
 
 {% endblock content %}

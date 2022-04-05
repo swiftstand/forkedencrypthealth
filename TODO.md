@@ -1,3 +1,6 @@
+# Admin update patient doesn't work
+1. Did not actually update the patient.
+
 ## Doctor create diagnosis view
 1. The profile pic is not correctly displayed.
 2. The create diagnosis button does not properly work.

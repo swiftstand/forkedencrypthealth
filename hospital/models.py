@@ -168,10 +168,7 @@ class Diagnosis(models.Model):
     feedback = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=True)
     symptoms = models.CharField(max_length=100, null=True)
-    address = models.CharField(max_length=40)
-    # # labtests = models.CharField(max_length=50,choices=departments,default='Complete Blood Count')
-    # labtests = models.CharField(max_length=50)
-    lab_work_required = models.CharField(max_length=100)
+    lab_work_required = models.CharField(max_length=50,choices=lab_work_required,default='Complete Blood Count')
 
 #insurance agent
 class Insurance(models.Model):
