@@ -496,7 +496,6 @@ def admin_add_patient_view(request):
                 return HttpResponseRedirect('admin-view-patient')
 
             else:
-            
                 logging.error("invalid form with data exist in admin view patient")
                 return HttpResponseRedirect('admin-add-patient')
     except Exception as e: 
@@ -826,7 +825,7 @@ def approve_insurance_view(request,pk):
 @user_passes_test(is_admin)
 def reject_insurance_view(request,pk):
     insurance=models.Insurance.objects.get(id=pk)
-    user=models.User.objects.get(id=user_id)
+    user=models.User.objects.get(id=insurance.user.id)
     user.delete()
     insurance.delete()
     return redirect('admin-approve-insurance')
