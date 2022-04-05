@@ -506,11 +506,15 @@ def admin_approve_hospitalstaff_view(request):
 def approve_doctor_view(request,pk):
     #those whose approval are needed
     try:
-        doctors=models.Doctor.objects.all().filter(status=False)
-        return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
+        doctor=models.Doctor.objects.get(id=pk)
+        doctor.status=True
+        doctor.save()
+        # return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
+        return redirect(reverse('admin-approve-doctor'))
     except Exception as e:
         logging.error("error in admin_approve_doctor_view,error is {}".format(e))
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
+        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))    
+        return redirect(reverse('admin-approve-doctor'))
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
