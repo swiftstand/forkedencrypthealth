@@ -2036,7 +2036,7 @@ def doctor_create_diagnosis_view(request, pk):
     if request.method=='POST':
 
         diagDict = {
-            'lab_work_required':request.POST.get('lab_work_required'),
+            'lab_work_required':request.POST.get('lab_work_required', 'true'),
         }
         context.update(diagDict)
         pDR = models.Diagnosis()
@@ -2046,7 +2046,7 @@ def doctor_create_diagnosis_view(request, pk):
         pDR.address=patient.address
         pDR.mobile=patient.mobile
         pDR.symptoms=patient.symptoms
-        pDR.lab_work_required = request.POST.get('lab_work_required')
+        pDR.lab_work_required = request.POST.get('lab_work_required', 'true')
         pDR.save()
         return render(request, 'hospital/doctor_download_diagnosis.html',context=context)
     return render(request, 'hospital/doctor_create_diagnosis.html', context=context)
