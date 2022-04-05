@@ -1277,7 +1277,7 @@ def hospitalstaff_discharge_patient_view(request):
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
-def discharge_patient_view(request,pk):
+def hs_discharge_patient_view(request,pk):
     patient=models.Patient.objects.get(id=pk)
     days=(date.today()-patient.admitDate) #2 days, 0:00:00
     assignedDoctor=models.User.objects.all().filter(id=patient.assignedDoctorId)
@@ -1318,6 +1318,7 @@ def discharge_patient_view(request,pk):
         pDD.doctorFee=int(request.POST['doctorFee'])
         pDD.OtherCharge=int(request.POST['OtherCharge'])
         pDD.total=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
+        pDD.remaining=(int(request.POST['roomCharge'])*int(d))+int(request.POST['doctorFee'])+int(request.POST['medicineCost'])+int(request.POST['OtherCharge'])
         pDD.save()
         return render(request,'hospital/patient_final_bill.html',context=patientDict)
     return render(request,'hospital/patient_generate_bill.html',context=patientDict)
