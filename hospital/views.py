@@ -16,7 +16,7 @@ import logging
 import os
 
 #log files
-os.makedirs('./logs', exist_ok=True)
+os.makedirs('/var/www/HospitalManagement/hospital/logs', exist_ok=True)
 logFileName= os.path.join(LOG_PATH, str(datetime.now().strftime("%m_%d_%Y") + ".log"))
 logging.basicConfig(filename=logFileName,  format='%(asctime)s %(message)s', level=logging.ERROR)
 
