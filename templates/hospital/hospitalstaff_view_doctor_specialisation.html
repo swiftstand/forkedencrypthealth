@@ -31,14 +31,14 @@
         <tr>
           <th>Department</th>
           <th>Doctor Name</th>
-          <th>Contact</th>
+
         </tr>
       </thead>
       {% for d in doctors %}
       <tr>
         <td>{{d.department}}</td>
         <td> {{d.get_name}}</td>
-        <td>{{d.mobile}}</td>
+
       </tr>
       {% endfor %}
     </table>
