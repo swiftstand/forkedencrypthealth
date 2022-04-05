@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>HMS - Django</title>
+  <title>HMS - HospitalStaff</title>
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -150,9 +150,6 @@
     .menu ul li.icon-users {
       background-image: url("http://www.entypo.com/images//users.svg");
     }
-    .menu ul li.icon-users {
-      background-image: url("http://www.entypo.com/images//users.svg");
-    }
     .menu ul li.icon-calendar {
       background-image: url("http://www.entypo.com/images//calendar.svg");
     }
@@ -283,21 +280,16 @@
   <nav class="menu" tabindex="0">
     <div class="smartphone-menu-trigger"></div>
     <header class="avatar">
-      <img src="{% static "images/adminpropic.png" %}" />
+      <img src="{% static "images/hospitalstaff.png" %}" />
       <br><br>
-      <h6>Admin</h6>
+      <h6>HospitalStaff</h6>
       <h2>{{request.user.first_name}}</h2>
     </header>
     <ul>
-      <li tabindex="0" class="icon-dashboard"> <a style="color:white; text-decoration:none;" href="/admin-dashboard"><span>Dashboard</span></a> </li>
-      <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/admin-doctor"><span>Doctor</span></a></li>
-      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-patient"><span>Patient</span></a></li>
-      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-hospitalstaff"><span>HospitalStaff</span></a></li>
-      <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/admin-appointment"><span>Appointment</span></a></li>
-      <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/admin-labstaff"><span>LabStaff</span></a></li>
-      <!-- adding insurance agent in side bar-->
-      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-insurance"><span>Insurance Agent</span></a></li>
-
+      <li tabindex="0" class="icon-dashboard"> <a style="color:white; text-decoration:none;" href="/hospitalstaff-dashboard"><span>Dashboard</span></a> </li>
+      <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/hospitalstaff-doctor"><span>Doctor</span></a></li>
+      <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/hospitalstaff-patient"><span>Patient</span></a></li>
+      <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/hospitalstaff-appointment"><span>Appointment</span></a></li>
     </ul>
   </nav>
 
@@ -307,7 +299,7 @@
     <!-- nav start -->
     <div class="bs-example">
       <nav class="navbar navbar-expand-md  navbar-dark fixed-top" style="background:#337AB7;">
-        <a href="/admin-dashboard" class="navbar-brand">HOSPITAL MANAGEMENT</a>
+        <a href="/hospitalstaff-dashboard" class="navbar-brand">HOSPITAL MANAGEMENT</a>
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -332,7 +324,10 @@
     <!-- content end-->
 
     <br><br><br><br>
+
   </main>
+
+
 </body>
 
 </html>

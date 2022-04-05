@@ -1,11 +1,14 @@
 from django.contrib import admin
-from .models import (Doctor, Patient, Appointment, PatientDischargeDetails,
-        Patient_LabTest_Records, LabTests, LabStaff, Diagnosis, Prescription, Insurance)
+from .models import *
+
 # Register your models here.
 class DoctorAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Doctor, DoctorAdmin)
 
+class HospitalStaffAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(HospitalStaff, HospitalStaffAdmin)
 #insurance created by prem
 class InsuranceAdmin(admin.ModelAdmin):
     pass

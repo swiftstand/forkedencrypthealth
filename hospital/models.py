@@ -41,6 +41,17 @@ class Doctor(models.Model):
     def __str__(self):
         return "{} ({})".format(self.user.first_name,self.department)
 
+class HospitalStaff(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    profile_pic= models.ImageField(upload_to='profile_pic/HospitalStaffProfilePic/',null=True,blank=True)
+    status=models.BooleanField(default=False)
+    @property
+    def get_name(self):
+        return self.user.first_name+" "+self.user.last_name
+    @property
+    def get_id(self):
+        return self.user.id
+
 class Patient(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     profile_pic= models.ImageField(upload_to='profile_pic/PatientProfilePic/',null=True,blank=True)
@@ -157,10 +168,7 @@ class Diagnosis(models.Model):
     feedback = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=True)
     symptoms = models.CharField(max_length=100, null=True)
-    address = models.CharField(max_length=40)
-    # # labtests = models.CharField(max_length=50,choices=departments,default='Complete Blood Count')
-    # labtests = models.CharField(max_length=50)
-    lab_work_required = models.CharField(max_length=100)
+    lab_work_required = models.CharField(max_length=50,choices=lab_work_required,default='Complete Blood Count')
 
 #insurance agent
 class Insurance(models.Model):
