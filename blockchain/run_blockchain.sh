@@ -3,6 +3,10 @@ echo "Creating our environment file"
 bash generate_env.sh
 echo "Finished creating our environment file"
 
+echo "Pulling needed docker images"
+bash pull_docker_images.sh
+echo "Successfully pull docker images"
+
 echo "Creating blockchain network"
 bash create_network.sh
 echo "Done creating network"
