@@ -1,14 +1,13 @@
-from ast import ExceptHandler
+import re
 from django.shortcuts import render,redirect,reverse
 from django.contrib import messages
 from hospitalmanagement.settings import LOG_PATH
 from . import forms,models
-from django.db.models import Sum
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
-from datetime import datetime,timedelta,date
+from datetime import datetime,date
 from django.conf import settings
 from django.db.models import Q
 
@@ -156,6 +155,7 @@ def patient_signup_view(request):
                 logging.error("error in patient_signup_view with data already exist.")    
     except Exception as e:
         logging.error("error in patient_signup_view, error is {}".format(e))
+        messages.error(request, "There was an internel server error")
         return HttpResponseRedirect('patientlogin')
 
     return render(request,'hospital/patientsignup.html',context=mydict)
@@ -230,6 +230,27 @@ def is_labstaff(user):
     return user.groups.filter(name='LABSTAFF').exists()
 def is_insurance(user):
     return user.groups.filter(name='INSURANCE').exists()
+
+def authentication_view(request):
+    OTPForm = forms.OneTimePasswordForm()
+    context = {'form': OTPForm}
+    if request.method == 'POST':
+        OTPForm = forms.OneTimePasswordForm(request.POST)
+        user = models.User.objects.get(id=request.user.id)
+        if OTPForm.is_valid():
+            entered_otp = OTPForm['code'].value()
+            valid_otp = settings.OTP.now()
+            print(f'User entered OTP: {entered_otp}')
+            print(f'Valid otp is: {valid_otp}')
+            if valid_otp == entered_otp:
+                print('The user has entered a valid OTP. Login in')
+                return HttpResponseRedirect('afterlogin')
+            else:
+                print('The user has entered an incorrect OTP code.')
+                messages.error(request, "Incorrect OTP Code.")
+        else:
+            messages.error(request, "Incorrect OTP Code.")
+    return render(request, 'hospital/authentication.html', context)
 
 #---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR , HOSPITALSTAFF, INSURANCESTAFF OR PATIENT
 def afterlogin_view(request):
@@ -323,6 +344,12 @@ def admin_hospitalstaff_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
+def admin_view_doctor_specialisation_view(request):
+    doctors=models.Doctor.objects.all().filter(status=True)
+    return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     print(f'I am the length of admin view doctor {len(doctors)}')
@@ -333,8 +360,6 @@ def admin_view_doctor_view(request):
 def admin_view_hospitalstaff_view(request):
     hospitalstaffs=models.HospitalStaff.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_hospitalstaff.html',{'hospitalstaffs':hospitalstaffs})
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -543,29 +568,28 @@ def delete_patient_from_hospital_view(request,pk):
     patient.delete()
     return redirect('admin-view-patient')
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def update_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    user=models.User.objects.get(id=patient.user_id)
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def update_patient_view(request,pk):
+#     patient=models.Patient.objects.get(id=pk)
+#     user=models.User.objects.get(id=patient.user_id)
 
-    userForm=forms.PatientUserForm(instance=user)
-    patientForm=forms.PatientForm(request.FILES,instance=patient)
-    mydict={'userForm':userForm,'patientForm':patientForm}
-    if request.method=='POST':
-        userForm=forms.PatientUserForm(request.POST,instance=user)
-        patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
-        if userForm.is_valid() and patientForm.is_valid():
-            user=userForm.save()
-            user.set_password(user.password)
-            user.save()
-            patient=patientForm.save(commit=False)
-            patient.status=True
-            patient.assignedDoctorId=request.POST.get('assignedDoctorId')
-            patient.save()
-            return redirect('admin-view-patient')
-    return render(request,'hospital/admin_update_patient.html',context=mydict)
-
+#     userForm=forms.PatientUserForm(instance=user)
+#     patientForm=forms.PatientForm(request.FILES,instance=patient)
+#     mydict={'userForm':userForm,'patientForm':patientForm}
+#     if request.method=='POST':
+#         userForm=forms.PatientUserForm(request.POST,instance=user)
+#         patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+#         if userForm.is_valid() and patientForm.is_valid():
+#             user=userForm.save()
+#             user.set_password(user.password)
+#             user.save()
+#             patient=patientForm.save(commit=False)
+#             patient.status=True
+#             patient.assignedDoctorId=request.POST.get('assignedDoctorId')
+#             patient.save()
+#             return redirect('admin-view-patient')
+#     return render(request,'hospital/admin_update_patient.html',context=mydict)
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -673,29 +697,24 @@ def admin_add_labstaff_view(request):
     return render(request,'hospital/admin_add_labstaff.html',context=mydict)
 
 #------------------FOR APPROVING PATIENT BY ADMIN----------------------
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_approve_patient_view(request):
-    #those whose approval are needed
-    patients=models.Patient.objects.all().filter(status=False)
-    return render(request,'hospital/admin_approve_patient.html',{'patients':patients})
-
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def approve_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    patient.status=True
-    patient.save()
-    return redirect(reverse('admin-approve-patient'))
-
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def reject_patient_view(request,pk):
-    patient=models.Patient.objects.get(id=pk)
-    user=models.User.objects.get(id=patient.user_id)
-    user.delete()
-    patient.delete()
-    return redirect('admin-approve-patient')
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def approve_patient_view(request,pk):
+    # patient=models.Patient.objects.get(id=pk)
+    # patient.status=True
+    # patient.save()
+    # return redirect(reverse('admin-approve-patient'))
+# 
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def reject_patient_view(request,pk):
+    # print('BEGIN OF REJECT PATIENT')
+    # patient=models.Patient.objects.get(id=pk)
+    # user=models.User.objects.get(id=patient.user_id)
+    # user.delete()
+    # patient.delete()
+    # print('END OF REJECT PATIENT')
+    # return redirect('admin-approve-patient')
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -753,7 +772,7 @@ def delete_patient_from_hospital_view(request,pk):
 @user_passes_test(is_admin)
 def update_patient_view(request,pk):
     try:
-
+        print('BEGIN OF UPDATE PATIENT VIEW')
         patient=models.Patient.objects.get(id=pk)
         user=models.User.objects.get(id=patient.user_id)
 
@@ -761,8 +780,11 @@ def update_patient_view(request,pk):
         patientForm=forms.PatientForm(request.FILES,instance=patient)
         mydict={'userForm':userForm,'patientForm':patientForm}
         if request.method=='POST':
+            print('I AM INSIDE THE POST REQUEST OF UPDATE PATIENT VIEW')
             userForm=forms.PatientUserForm(request.POST,instance=user)
             patientForm=forms.PatientForm(request.POST,request.FILES,instance=patient)
+            print(f'The user form is valid {userForm.is_valid()}')
+            print(f'The patient form is valid {patientForm.is_valid()}')
             if userForm.is_valid() and patientForm.is_valid():
                 user=userForm.save()
                 user.set_password(user.password)
@@ -771,10 +793,12 @@ def update_patient_view(request,pk):
                 patient.status=True
                 patient.assignedDoctorId=request.POST.get('assignedDoctorId')
                 patient.save()
+                print('updated patient properly and saving db')
                 return redirect('admin-view-patient')
     except Exception as e: 
         logging.error("error in update patient view, error is {}".format(e))  
         return redirect('admin-view-patient')             
+    print('END OF UPDATE PATIENT VIEW')
     return render(request,'hospital/admin_update_patient.html',context=mydict)
 
 
@@ -1150,22 +1174,16 @@ def hospitalstaff_view_doctor_specialisation_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     return render(request,'hospital/hospitalstaff_view_doctor_specialisation.html',{'doctors':doctors})
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
 def hospitalstaff_patient_view(request):
     return render(request,'hospital/hospitalstaff_patient.html')
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
 def hospitalstaff_view_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'hospital/hospitalstaff_view_patient.html',{'patients':patients})
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1175,8 +1193,6 @@ def delete_patient_from_hospital_view(request,pk):
     user.delete()
     patient.delete()
     return redirect('hospitalstaff-view-patient')
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1200,10 +1216,6 @@ def update_patient_view(request,pk):
             patient.save()
             return redirect('hospitalstaff-view-patient')
     return render(request,'hospital/hospitalstaff_update_patient.html',context=mydict)
-
-
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1231,8 +1243,6 @@ def hospitalstaff_add_patient_view(request):
         return HttpResponseRedirect('hospitalstaff-view-patient')
     return render(request,'hospital/hospitalstaff_add_patient.html',context=mydict)
 
-
-
 #------------------FOR APPROVING PATIENT BY hospitalstaff----------------------
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1241,28 +1251,22 @@ def hospitalstaff_approve_patient_view(request):
     patients=models.Patient.objects.all().filter(status=False)
     return render(request,'hospital/hospitalstaff_approve_patient.html',{'patients':patients})
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
-def approve_patient_view(request,pk):
+def hs_approve_patient_view(request,pk):
     patient=models.Patient.objects.get(id=pk)
     patient.status=True
     patient.save()
     return redirect(reverse('hospitalstaff-approve-patient'))
-
-
-
+# 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
-def reject_patient_view(request,pk):
+def hospitalstaff_reject_patient_view(request,pk):
     patient=models.Patient.objects.get(id=pk)
     user=models.User.objects.get(id=patient.user_id)
     user.delete()
     patient.delete()
     return redirect('hospitalstaff-approve-patient')
-
-
 
 #--------------------- FOR DISCHARGING PATIENT BY hospitalstaff START-------------------------
 @login_required(login_url='hospitalstafflogin')
@@ -1270,8 +1274,6 @@ def reject_patient_view(request,pk):
 def hospitalstaff_discharge_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True)
     return render(request,'hospital/hospitalstaff_discharge_patient.html',{'patients':patients})
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1320,15 +1322,12 @@ def discharge_patient_view(request,pk):
         return render(request,'hospital/patient_final_bill.html',context=patientDict)
     return render(request,'hospital/patient_generate_bill.html',context=patientDict)
 
-
-
 #--------------for discharge patient bill (pdf) download and printing
 import io
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
-
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
@@ -1338,8 +1337,6 @@ def render_to_pdf(template_src, context_dict):
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return
-
-
 
 def download_pdf_view(request,pk):
     dischargeDetails=models.PatientDischargeDetails.objects.all().filter(patientId=pk).order_by('-id')[:1]
@@ -1360,23 +1357,17 @@ def download_pdf_view(request,pk):
     }
     return render_to_pdf('hospital/download_bill.html',dict)
 
-
-
 #-----------------APPOINTMENT START--------------------------------------------------------------------
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
 def hospitalstaff_appointment_view(request):
     return render(request,'hospital/hospitalstaff_appointment.html')
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
 def hospitalstaff_view_appointment_view(request):
     appointments=models.Appointment.objects.all().filter(status=True)
     return render(request,'hospital/hospitalstaff_view_appointment.html',{'appointments':appointments})
-
-
 
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
@@ -1396,8 +1387,6 @@ def hospitalstaff_add_appointment_view(request):
         return HttpResponseRedirect('hospitalstaff-view-appointment')
     return render(request,'hospital/hospitalstaff_add_appointment.html',context=mydict)
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
 def hospitalstaff_approve_appointment_view(request):
@@ -1405,31 +1394,24 @@ def hospitalstaff_approve_appointment_view(request):
     appointments=models.Appointment.objects.all().filter(status=False)
     return render(request,'hospital/hospitalstaff_approve_appointment.html',{'appointments':appointments})
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
-def approve_appointment_view(request,pk):
+def hs_approve_appointment_view(request,pk):
     appointment=models.Appointment.objects.get(id=pk)
     appointment.status=True
     appointment.save()
     return redirect(reverse('hospitalstaff-approve-appointment'))
 
-
-
 @login_required(login_url='hospitalstafflogin')
 @user_passes_test(is_hospitalstaff)
-def reject_appointment_view(request,pk):
+def hs_reject_appointment_view(request,pk):
     appointment=models.Appointment.objects.get(id=pk)
     appointment.delete()
     return redirect('hospitalstaff-approve-appointment')
+
 #---------------------------------------------------------------------------------
 #------------------------ HOSPITALSTAFF RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
-
-
-
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -1437,7 +1419,6 @@ def admin_approve_insurance_view(request):
     #those whose approval are needed
     insurance=models.Insurance.objects.all().filter(status=False)
     return render(request,'hospital/admin_approve_insurance.html',{'insurance':insurance})
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -1457,7 +1438,6 @@ def reject_insurance_view(request,pk):
     user.delete()
     insurance.delete()
     return redirect('admin-approve-insurance')
-
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)

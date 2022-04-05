@@ -29,9 +29,6 @@
 ## Transaction
 1. After a patient submits a transaction an admin or hospital staff will have to approve it.
 
-## OTP
-1. OTP will need to be implemented with pyotp
-
 ## SSL certificates
 1. We need to generate SSL certificates to sign our connection
     a. This is a requirement to get an https:// address

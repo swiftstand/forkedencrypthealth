@@ -1,4 +1,4 @@
-{% extends 'hospital/admin_base.html' %}
+{% extends 'hospital/hospitalstaff_base.html' %}
 {% load widget_tweaks %}
 {% block content %}
 
@@ -47,6 +47,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <br><br>
+
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="container register-form">
